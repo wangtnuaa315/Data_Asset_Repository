@@ -1,0 +1,51 @@
+# 数据资产管理系统 - 配置文件
+# config.yaml
+
+# NAS配置
+nas:
+  base_path: '/data/nas_data'
+  
+# PostgreSQL配置
+postgresql:
+  host: '192.168.2.170'
+  port: 5432
+  user: 'admin'
+  password: 'Huaiye@2020**'
+  database: 'asset_catalog'
+
+# MySQL配置（可选 - 仅import_business_data.py使用）
+# 如果暂时不需要从MySQL导入业务数据，可以不配置
+mysql:
+  enabled: false  # 设为true时才启用MySQL导入
+  host: '192.168.2.170'
+  user: 'root'
+  password: 'your_mysql_password'
+  database: 'ia_center'  # 根据实际情况修改
+
+# 文件命名规范
+naming_rules:
+  # 告警图片命名规范：alarm_设备编码.扩展名
+  # 示例：alarm_001e67b2f0411310030522.jpg
+  alarm_image:
+    allowed_extensions: ['.jpg', '.jpeg', '.png']
+    # 正则：alarm_开头 + 设备编码（字母数字） + 扩展名
+    pattern: '^alarm_[a-zA-Z0-9]+\\.(jpg|jpeg|png)$'
+    max_length: 255
+    illegal_chars: ['<', '>', ':', '"', '|', '?', '*', ' ']
+    description: '告警图片命名格式：alarm_设备编码.jpg'
+
+# 支持的文件类型
+allowed_extensions:
+  - '.jpg'
+  - '.jpeg'
+  - '.png'
+  - '.pdf'
+  - '.doc'
+  - '.docx'
+  - '.xls'
+  - '.xlsx'
+
+# 日志配置
+logging:
+  level: 'INFO'
+  log_dir: '/opt/data_asset/logs'

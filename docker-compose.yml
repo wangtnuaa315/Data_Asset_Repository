@@ -1,0 +1,100 @@
+services:
+  # ----------------------------------------------------
+  # 1. 逻辑层：资产目录数据库 (PostgreSQL)
+  # ----------------------------------------------------
+  db:
+    image: postgres:15-alpine
+    container_name: asset_catalog_db
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: Huaiye@2020** # 已修改为指定密码
+      POSTGRES_DB: asset_catalog
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+    networks:
+      - asset_net
+
+  # ----------------------------------------------------
+  # 2. 管理工具：数据库管理界面 (pgAdmin 4)
+  # 访问地址: http://IP:18080
+  # 默认账号: admin@admin.com / Huaiye@2020**
+  # ----------------------------------------------------
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: asset_catalog_pgadmin
+    restart: always
+    user: root
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: Huaiye@2020**
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: 'False'
+    ports:
+      - "18080:80"
+    volumes:
+      - ./pgadmin_data:/var/lib/pgadmin
+    networks:
+      - asset_net
+    depends_on:
+      - db
+
+  # ----------------------------------------------------
+  # 3. 展示/交互层：Web 文件管理器 (FileBrowser)
+  # 访问地址: http://IP:8081 (默认账号 admin / 自动生成)
+  # ----------------------------------------------------
+  filebrowser:
+    build:
+      context: .
+      dockerfile: Dockerfile.filebrowser
+    container_name: asset_file_manager
+    restart: always
+    ports:
+      - "8081:80"
+    volumes:
+      - /data/nas_data:/srv
+      - ./filebrowser_data:/database
+    networks:
+      - asset_net
+
+  # ----------------------------------------------------
+  # 4. 资产检索系统 - 后端API (FastAPI)
+  # 访问地址: http://IP:8003/docs
+  # ----------------------------------------------------
+  asset_web_backend:
+    build:
+      context: ./asset-web-backend
+    container_name: asset_web_api
+    restart: always
+    ports:
+      - "8003:8000"
+    volumes:
+      - /data/nas_data:/data/nas_data:ro
+    environment:
+      - DATABASE_URL=postgresql://admin:Huaiye@2020**@db:5432/asset_catalog
+    networks:
+      - asset_net
+    depends_on:
+      - db
+
+  # ----------------------------------------------------
+  # 5. 资产检索系统 - 前端界面 (Vue 3)
+  # 访问地址: http://IP:8082
+  # ----------------------------------------------------
+  asset_web_frontend:
+    build:
+      context: ./asset-web-frontend
+    container_name: asset_web_ui
+    restart: always
+    ports:
+      - "8082:80"
+    networks:
+      - asset_net
+    depends_on:
+      - asset_web_backend
+
+networks:
+  asset_net:
+    driver: bridge
