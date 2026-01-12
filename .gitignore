@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
+.venv/
+
+# Logs
+logs/
+*.log
+
+# Node.js
+node_modules/
+dist/
+.npm
+*.local
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker volumes data (not tracked)
+pg_data/
+pgadmin_data/
+filebrowser_data/
+
+# Environment files
+.env
+.env.local
+*.env
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Build artifacts
+*.egg-info/
+build/
