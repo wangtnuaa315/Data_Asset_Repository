@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS asset_catalog (
     status VARCHAR(20) DEFAULT 'ready',
     registered_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     last_verified_at TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     
     -- 扩展元数据
     metadata JSONB,
@@ -347,52 +348,13 @@ ORDER BY scan_date DESC;
 COMMENT ON VIEW v_scan_tasks_summary IS '扫描任务统计视图：按日汇总扫描情况';
 
 -- =====================================================
--- 8. 示例数据
+-- 8. 示例数据（已注释，生产环境不需要）
 -- =====================================================
 
--- 插入示例资产
-INSERT INTO asset_catalog (filepath, filename, filesize, file_ext, mtime, md5_hash, industry, category, subcategory, year, quarter, metadata)
-VALUES 
-    ('/data/nas_data/10_Official_Library/02_应急_安全/02_历史告警归档/森林防火/2024_Q1/alarm_001.jpg', 
-     'alarm_001.jpg', 
-     1024000, 
-     '.jpg', 
-     '2024-01-15 14:30:00', 
-     'abc123def456789', 
-     '应急_安全', 
-     '历史告警归档', 
-     '森林防火', 
-     2024, 
-     '2024_Q1',
-     '{"original_source": "应急平台", "upload_user": "admin"}'::jsonb);
-
--- 插入示例告警资产（使用JSONB）
-INSERT INTO emergency_alarm_assets (asset_id, alarm_id, alarm_type, alarm_time, area_code, status, business_data)
-VALUES 
-    (1, 
-     12345, 
-     400, 
-     '2024-01-15 14:30:00', 
-     'AREA001', 
-     1,
-     jsonb_build_object(
-         'dev_code', 'DEV001',
-         'dev_name', '森林监控设备A',
-         'alarm_name', '森林防火',
-         'channel_code', 'CH001',
-         'channel_name', '通道1号',
-         'area_name', '某某林区',
-         'source', 2,
-         'level', 2,
-         'analysis', 'AI检测到疑似火情',
-         'link_screen', 1,
-         'link_live', 1
-     ));
-
--- 插入示例扫描任务
-INSERT INTO asset_scan_tasks (scan_directory, files_scanned, files_added, task_status)
-VALUES 
-    ('/data/nas_data/10_Official_Library', 100, 5, 'completed');
+-- 注：以下示例数据仅供测试使用，生产环境请勿执行
+-- INSERT INTO asset_catalog ... (已删除)
+-- INSERT INTO emergency_alarm_assets ... (已删除)
+-- INSERT INTO asset_scan_tasks ... (已删除)
 
 -- =====================================================
 -- 9. 维护函数

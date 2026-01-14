@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Blue Theme Demo - 数据资产检索系统</title>
+    <style>
+        /* Tech Blue Theme Variables */
+        :root {
+            --primary-color: #0066ff;
+            /* More vibrant tech blue */
+            --primary-hover: #0052cc;
+            --primary-light: #e6f0ff;
+            --secondary-color: #64748b;
+            --bg-body: #f0f4f8;
+            /* Cool gray-blue tint */
+            --bg-card: #ffffff;
+            --text-main: #1e293b;
+            --text-secondary: #475569;
+            --border-color: #cbd5e1;
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* Demo Containers */
+        .demo-container {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+
+        .demo-label {
+            background: #333;
+            color: white;
+            padding: 8px 16px;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* Mockup: Login Page */
+        .login-mockup {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* Tech Blue Gradient Background */
+            background: linear-gradient(135deg, #f0f4f8 0%, #dbeafe 100%);
+            position: relative;
+        }
+
+        /* Subtle Pattern */
+        .login-mockup::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(#3b82f6 0.5px, transparent 0.5px);
+            background-size: 20px 20px;
+            opacity: 0.1;
+        }
+
+        .login-card {
+            width: 360px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            z-index: 1;
+        }
+
+        .logo-area {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--primary-color);
+            border-radius: 12px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .login-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .login-subtitle {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 14px;
+            transition: all 0.2s;
+            background: #f8fafc;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px var(--primary-light);
+            background: white;
+        }
+
+        .btn-primary {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+        }
+
+        /* Mockup: Dashboard */
+        .dashboard-mockup {
+            flex: 1;
+            background: #f1f5f9;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .mock-header {
+            background: white;
+            padding: 0 24px;
+            height: 60px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-logo {
+            color: var(--primary-color);
+            font-weight: 800;
+            font-size: 18px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .header-nav span {
+            margin-left: 20px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            cursor: pointer;
+        }
+
+        .header-nav span.active {
+            color: var(--primary-color);
+            font-weight: 600;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 19px;
+        }
+
+        .mock-content {
+            padding: 24px;
+        }
+
+        .search-bar {
+            background: white;
+            padding: 16px 24px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-sm);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 24px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .asset-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            box-shadow: var(--shadow-sm);
+            transition: transform 0.2s;
+        }
+
+        .asset-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-md);
+            border-color: var(--primary-light);
+        }
+
+        .card-img {
+            height: 120px;
+            background: #e2e8f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+        }
+
+        .card-info {
+            padding: 12px;
+        }
+
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            background: #fee2e2;
+            color: #ef4444;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- LEFT: Login Page Design -->
+    <div class="demo-container">
+        <div class="demo-label">方案 A: 科技蓝登录页 (Tech Blue Login)</div>
+        <div class="login-mockup">
+            <div class="login-card">
+                <div class="logo-area">
+                    <div class="logo-icon">📊</div>
+                    <div class="login-title">数据资产检索系统</div>
+                    <div class="login-subtitle">Data Asset Retrieval System</div>
+                </div>
+                <div class="input-group">
+                    <input type="text" class="input-field" placeholder="用户名" value="admin">
+                </div>
+                <div class="input-group">
+                    <input type="password" class="input-field" placeholder="密码" value="******">
+                </div>
+                <button class="btn-primary">立即登录</button>
+                <div style="text-align: center; margin-top: 16px; font-size: 12px; color: #94a3b8;">
+                    Tech Blue Theme v2.0
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT: Dashboard Design -->
+    <div class="demo-container">
+        <div class="demo-label">方案 B: 科技蓝内页 (Tech Blue Dashboard)</div>
+        <div class="dashboard-mockup">
+            <div class="mock-header">
+                <div class="header-logo">
+                    <span
+                        style="background:var(--primary-color); color:white; width:24px; height:24px; border-radius:4px; display:inline-flex; align-items:center; justify-content:center;">D</span>
+                    数据资产检索
+                </div>
+                <div class="header-nav">
+                    <span class="active">应急安全</span>
+                    <span>法规案件</span>
+                    <span>管理中心</span>
+                </div>
+                <div style="font-size: 13px; color: #64748b;">Admin</div>
+            </div>
+
+            <div class="mock-content">
+                <!-- Compact Search -->
+                <div class="search-bar">
+                    <span style="font-weight: 600; color: var(--text-main); font-size: 14px;">筛选:</span>
+                    <input type="text" class="input-field" style="width: 150px; margin:0;" placeholder="告警类型">
+                    <input type="text" class="input-field" style="width: 150px; margin:0;" placeholder="日期范围">
+                    <button class="btn-primary" style="width: auto; padding: 10px 24px;">检索</button>
+                    <button class="btn-primary"
+                        style="width: auto; padding: 10px 24px; background: white; color: var(--text-secondary); border: 1px solid #cbd5e1;">重置</button>
+                </div>
+
+                <!-- Content Grid -->
+                <div class="asset-grid">
+                    <!-- Card 1 -->
+                    <div class="asset-card">
+                        <div class="card-img">IMG_001.jpg</div>
+                        <div class="card-info">
+                            <div class="card-title">烟雾告警_012</div>
+                            <span class="tag">烟雾报警</span>
+                        </div>
+                    </div>
+                    <!-- Card 2 -->
+                    <div class="asset-card">
+                        <div class="card-img">IMG_002.jpg</div>
+                        <div class="card-info">
+                            <div class="card-title">火情监测_034</div>
+                            <span class="tag">火情报警</span>
+                        </div>
+                    </div>
+                    <!-- Card 3 -->
+                    <div class="asset-card">
+                        <div class="card-img">IMG_003.jpg</div>
+                        <div class="card-info">
+                            <div class="card-title">人员越界_055</div>
+                            <span class="tag">越界报警</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

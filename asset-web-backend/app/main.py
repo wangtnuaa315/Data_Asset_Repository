@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.config import get_settings
 from app.database import db
-from app.routers import emergency, files
+from app.routers import emergency, files, auth, admin
 
 settings = get_settings()
 
@@ -38,6 +38,8 @@ app.add_middleware(
 )
 
 # 注册路由
+app.include_router(auth.router)
+app.include_router(admin.router)
 app.include_router(emergency.router)
 app.include_router(files.router)
 

@@ -87,34 +87,38 @@ const handleDownload = () => {
 .asset-card {
   cursor: pointer;
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  background: rgba(26, 31, 58, 0.3);
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+  
+  /* 强制 Glassmorphism - 用户规范 */
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+  
+  /* 16px 圆角 */
+  border-radius: 16px;
+  
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
+/* 交互微效 - translateY(-4px) + 阴影加深 */
 .asset-card:hover {
-  transform: translateY(-5px) scale(1.02);
-  border-color: var(--primary-color);
-  box-shadow: 0 10px 30px -10px rgba(0, 212, 255, 0.3);
-  z-index: 10;
-}
-
-.asset-card.selected {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
-  background: rgba(0, 212, 255, 0.1);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(31, 38, 135, 0.15);
 }
 
 .card-image {
   position: relative;
   width: 100%;
-  height: 180px;
+  height: 160px; /* Reduced height */
+  flex-shrink: 0;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 8px 8px 0 0;
+  background: #f1f5f9;
+  border-bottom: 1px solid #f1f5f9;
 }
 
 .card-image img {
@@ -125,7 +129,7 @@ const handleDownload = () => {
 }
 
 .asset-card:hover .card-image img {
-  transform: scale(1.15);
+  transform: scale(1.05);
 }
 
 .image-overlay {
@@ -134,74 +138,81 @@ const handleDownload = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(13, 17, 34, 0.7);
+  background: rgba(0, 0, 0, 0.3); /* Lighter overlay */
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 12px;
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: all 0.2s ease;
   backdrop-filter: blur(2px);
+  z-index: 5;
 }
 
 .asset-card:hover .image-overlay {
   opacity: 1;
 }
 
-.card-checkbox {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 10;
-  transform: scale(1.1);
-}
-
+/* Light theme checkbox styles */
 :deep(.el-checkbox__inner) {
-  background-color: rgba(26, 31, 58, 0.9);
-  border-color: rgba(255, 255, 255, 0.3);
+  background-color: #fff;
+  border-color: #cbd5e1;
 }
 
 :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
   background-color: var(--primary-color);
   border-color: var(--primary-color);
-  box-shadow: 0 0 10px var(--primary-color);
+}
+
+.card-checkbox {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
 }
 
 .card-content {
-  padding: 16px;
+  padding: 12px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-primary);
-  margin-bottom: 10px;
+  margin-bottom: 8px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  letter-spacing: 0.5px;
+  text-shadow: none;
 }
 
 .card-meta {
-  margin-bottom: 12px;
+  margin-bottom: auto; /* Push info to bottom */
 }
 
 .card-info {
+  margin-top: 12px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 8px;
 }
 
 .info-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
+  gap: 6px;
+  font-size: 12px;
   color: var(--text-secondary);
+  font-family: inherit; /* Remove monospaced font constraint */
 }
 
 .info-item .el-icon {
-  color: var(--primary-color);
-  filter: drop-shadow(0 0 2px var(--primary-color));
+  color: var(--text-muted);
+  filter: none;
 }
 </style>

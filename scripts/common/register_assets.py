@@ -402,10 +402,21 @@ class AssetRegistrar:
             # 打印摘要
             self.print_summary()
             
-            # 完成扫描任务
-            self.finish_scan_task('completed')
-            
-            logger.info("✅ 资产注册完成！")
+            # 检查是否有错误
+            if self.stats['errors'] > 0:
+                # 如果所有操作都失败了，标记为失败
+                if self.stats['added'] == 0 and self.stats['updated'] == 0:
+                    self.finish_scan_task('failed', f"全部{self.stats['errors']}个文件注册失败")
+                    logger.error(f"❌ 资产注册失败：{self.stats['errors']}个错误")
+                    raise Exception(f"资产注册失败：{self.stats['errors']}个错误")
+                else:
+                    # 部分成功
+                    self.finish_scan_task('completed')
+                    logger.warning(f"⚠️ 资产注册完成，但有{self.stats['errors']}个错误")
+            else:
+                # 完成扫描任务
+                self.finish_scan_task('completed')
+                logger.info("✅ 资产注册完成！")
             
         except Exception as e:
             logger.error(f"❌ 资产注册失败: {e}")

@@ -2,95 +2,76 @@
   <div class="emergency-page">
     <!-- 搜索区域 -->
     <!-- 搜索区域 -->
-    <div class="search-section glass-effect">
-      <div class="search-header">
-        <div class="header-title glow-text">
-          <el-icon :size="20"><Search /></el-icon>
-          <span>智能检索</span>
-        </div>
-        <div class="header-decoration"></div>
-      </div>
-
-      <el-form :model="searchForm" label-position="top" class="search-form">
-        <el-row :gutter="20">
+    <div class="search-section">
+      <!-- 移除独立的header，将标题整合到表单或直接简化 -->
+      <div class="search-compact-wrapper">
+        <el-form :model="searchForm" class="search-form-flex" :inline="true">
           <!-- 告警类型 -->
-          <el-col :xs="24" :sm="12" :md="6" :lg="6">
-            <el-form-item label="告警类型">
-              <el-select
-                v-model="searchForm.alarm_types"
-                multiple
-                collapse-tags
-                collapse-tags-tooltip
-                placeholder="全部类型"
-                clearable
-                class="tech-input"
-              >
-                <template #prefix><el-icon><Warning /></el-icon></template>
-                <el-option
-                  v-for="type in alarmTypes"
-                  :key="type"
-                  :label="type"
-                  :value="type"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
+          <el-form-item label="告警类型" class="compact-item">
+            <el-select
+              v-model="searchForm.alarm_types"
+              multiple
+              collapse-tags
+              collapse-tags-tooltip
+              placeholder="全部类型"
+              clearable
+              class="compact-input"
+            >
+              <el-option
+                v-for="type in alarmTypes"
+                :key="type"
+                :label="type"
+                :value="type"
+              />
+            </el-select>
+          </el-form-item>
 
           <!-- 时间范围 -->
-          <el-col :xs="24" :sm="12" :md="8" :lg="8">
-            <el-form-item label="时间范围">
-              <el-date-picker
-                v-model="dateRange"
-                type="daterange"
-                range-separator="-"
-                start-placeholder="开始"
-                end-placeholder="结束"
-                value-format="YYYY-MM-DD"
-                :shortcuts="dateShortcuts"
-                class="tech-input date-range-full"
-              />
-            </el-form-item>
-          </el-col>
+          <el-form-item label="时间范围" class="compact-item">
+            <el-date-picker
+              v-model="dateRange"
+              type="daterange"
+              range-separator="-"
+              start-placeholder="开始"
+              end-placeholder="结束"
+              value-format="YYYY-MM-DD"
+              :shortcuts="dateShortcuts"
+              class="compact-date"
+            />
+          </el-form-item>
 
-          <!-- 设备和关键词 -->
-          <el-col :xs="24" :sm="12" :md="5" :lg="5">
-             <el-form-item label="设备编码">
-               <el-input 
-                 v-model="searchForm.dev_code" 
-                 placeholder="设备ID" 
-                 clearable
-                 class="tech-input"
-               >
-                 <template #prefix><el-icon><Cpu /></el-icon></template>
-               </el-input>
-             </el-form-item>
-          </el-col>
+          <!-- 设备编码 -->
+          <el-form-item label="设备" class="compact-item small-item">
+             <el-input 
+               v-model="searchForm.dev_code" 
+               placeholder="ID" 
+               clearable
+               class="compact-input"
+             />
+          </el-form-item>
 
-          <el-col :xs="24" :sm="12" :md="5" :lg="5">
-              <el-form-item label="AI分析关键词">
-                <el-input 
-                  v-model="searchForm.keyword" 
-                  placeholder="如: 火点, 烟雾..." 
-                  clearable
-                  class="tech-input"
-                  @keyup.enter="handleSearch"
-                >
-                  <template #prefix><el-icon><Aim /></el-icon></template>
-                </el-input>
-              </el-form-item>
-          </el-col>
-        </el-row>
-        
-        <!-- 搜索按钮栏 (浮动在右下或独立一行) -->
-        <div class="search-actions">
-           <el-button type="primary" :icon="Search" @click="handleSearch" :loading="loading" class="action-btn">
-             立即检索
-           </el-button>
-           <el-button :icon="Refresh" @click="handleReset" class="reset-btn">
-             重置条件
-           </el-button>
-        </div>
-      </el-form>
+          <!-- 关键词 -->
+          <el-form-item label="关键词" class="compact-item medium-item">
+            <el-input 
+              v-model="searchForm.keyword" 
+              placeholder="AI分析..." 
+              clearable
+              class="compact-input"
+              @keyup.enter="handleSearch"
+            />
+          </el-form-item>
+
+          <!-- 按钮组 -->
+          <div class="search-actions-inline">
+            <el-button type="primary" :icon="Search" @click="handleSearch" :loading="loading">
+              检索
+            </el-button>
+            <el-button :icon="Refresh" @click="handleReset" class="reset-btn">
+              重置
+            </el-button>
+          </div>
+        </el-form>
+      </div>
     </div>
 
     <!-- 结果统计 -->
@@ -155,9 +136,9 @@
           <template #default="{ row }">
             <el-image
               :src="row.thumbnail_url"
-              :preview-src-list="[row.thumbnail_url.replace('/thumbnail/', '/download/')]"
               fit="cover"
               class="table-thumbnail"
+              style="cursor: default;"
             />
           </template>
         </el-table-column>
@@ -172,14 +153,7 @@
             {{ formatDate(row.alarm_time) }}
           </template>
         </el-table-column>
-        <el-table-column prop="analysis" label="AI分析" width="150">
-          <template #default="{ row }">
-            <el-tag v-if="row.analysis && row.analysis.trim()" type="success" effect="dark" size="small">
-              {{ row.analysis }}
-            </el-tag>
-            <span v-else class="no-analysis">暂无</span>
-          </template>
-        </el-table-column>
+
         <el-table-column label="操作" width="160" fixed="right">
           <template #default="{ row }">
             <el-button type="primary" link @click="showDetail(row)" size="small">详情</el-button>
@@ -393,102 +367,137 @@ const downloadAsset = (asset) => {
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  overflow: auto;
+  gap: 24px;
+  overflow: hidden; /* 由内部容器滚动 */
 }
 
+/* 搜索区域增强 - 极简紧凑版 Flex布局 */
+/* =====================================================
+   搜索区域 - Visual Polish 用户指定规范
+   max-width: 1200px | 居中 | 56px 高度 | 16px 圆角
+   ===================================================== */
 .search-section {
-  flex-shrink: 0;
-  padding: 20px 24px;
-  border-radius: 12px;
-  margin-bottom: 24px;
-  position: relative;
-  overflow: hidden;
+  /* 布局约束 - 不要占满全宽 */
+  max-width: 1200px;
+  margin: 0 auto 16px auto;
+  
+  /* 内边距 */
+  padding: 20px 32px;
+  
+  /* 强制 Glassmorphism */
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
+  
+  /* 圆润现代 */
+  border-radius: 16px;
 }
 
-.search-section::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
-  opacity: 0.5;
-}
-
-.search-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.header-title {
+.search-form-flex {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--primary-color);
-  letter-spacing: 1px;
-}
-
-.search-form {
-  position: relative;
-}
-
-/* 覆盖Element Form Item样式 */
-:deep(.el-form-item__label) {
-  color: var(--text-secondary);
-  font-size: 12px;
-  padding-bottom: 4px;
-}
-
-.tech-input {
-  width: 100%;
-}
-
-.date-range-full {
-  width: 100% !important;
-}
-
-.search-actions {
-  display: flex;
-  justify-content: flex-end;
+  flex-wrap: wrap;
   gap: 16px;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.action-btn {
-  padding: 0 30px;
-  height: 40px;
+.search-form-flex .el-form-item {
+  margin-bottom: 0;
+  margin-right: 0;
+  display: flex;
+  align-items: center;
 }
 
+/* 输入框增强 - 56px 高度, 16px 圆角 */
+.search-section :deep(.el-input__wrapper),
+.search-section :deep(.el-select__wrapper) {
+  height: 56px !important;
+  border-radius: 16px !important;
+  padding: 0 20px !important;
+}
+
+.search-section :deep(.el-input__inner) {
+  height: 54px !important;
+  line-height: 54px !important;
+}
+
+/* 控件宽度控制 - 四个条件平均分配 */
+.compact-input {
+  width: 180px !important;
+}
+
+.compact-date {
+  width: 180px !important;
+}
+
+/* 移除 small/medium 差异，统一宽度 */
+.small-item .compact-input {
+  width: 140px !important;
+}
+
+.medium-item .compact-input {
+  width: 180px !important;
+}
+
+.search-actions-inline {
+  display: flex;
+  gap: 8px;
+  margin-left: auto; /* 推到右侧，如需紧挨则去掉此行 */
+}
+
+/* 移除不需要的header样式 */
+.search-header, .header-title, .header-decoration, .search-section::after {
+  display: none;
+}
+
+/* 响应式调整 */
+@media (max-width: 1200px) {
+  .search-actions-inline {
+    margin-left: 0; /* 小屏幕下不强推右侧 */
+  }
+}
+
+.reset-btn {
+  background: #f8f9fa;
+  border-color: #dcdfe6;
+}
+
+.reset-btn:hover {
+  color: var(--primary-color);
+  border-color: #b3d8ff;
+  background-color: #ecf5ff;
+}
+
+/* 结果统计栏 - 磨砂玻璃 */
 .results-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 24px;
-  background: rgba(26, 31, 58, 0.4);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  margin-bottom: 16px;
-  backdrop-filter: blur(5px);
+  padding: 12px 24px;
+  /* Glass Effect */
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  margin-top: 12px;
 }
 
 .stats, .selected-info {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   color: var(--text-secondary);
+  font-size: 14px;
 }
 
 .stats strong, .selected-info strong {
   color: var(--primary-color);
   font-size: 18px;
+  font-weight: 600;
+  text-shadow: none;
 }
 
 .loading-container {
@@ -497,58 +506,65 @@ const downloadAsset = (asset) => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 20px;
   color: var(--primary-color);
+  text-shadow: 0 0 10px rgba(0, 242, 255, 0.4);
 }
 
+/* 结果网格 - 添加动画 */
 .results-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 20px;
+  grid-auto-rows: 290px; /* 强制固定行高，防止卡片塌陷 */
+  gap: 24px;
+  padding-bottom: 20px;
+  animation: fadeIn 0.5s ease-out;
   flex: 1;
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  padding: 20px 0;
+  overflow-y: auto;
+  min-height: 0; /* 允许flex子项滚动 */
+  padding-right: 4px; /* 防止滚动条遮挡 */
 }
 
 /* 列表视图容器 */
 .results-list {
   flex: 1;
+  min-height: 0;
   border-radius: 8px;
-  overflow: hidden;
+  overflow: auto;
+  background: #ffffff;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  animation: fadeIn 0.5s ease-out;
 }
 
-/* 表格深色主题适配 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 表格轻量化适配 */
 :deep(.asset-table) {
-  --el-table-border-color: rgba(255, 255, 255, 0.05);
-  --el-table-header-bg-color: rgba(0, 0, 0, 0.3);
-  --el-table-bg-color: transparent;
-  --el-table-tr-bg-color: transparent;
+  --el-table-border-color: #ebeef5;
+  --el-table-header-bg-color: #f8f9fa;
+  --el-table-bg-color: #ffffff;
+  --el-table-tr-bg-color: #ffffff;
   --el-table-text-color: var(--text-regular);
-  --el-table-header-text-color: var(--text-secondary);
-  --el-table-row-hover-bg-color: rgba(0, 212, 255, 0.08);
-  background-color: transparent !important;
+  --el-table-header-text-color: var(--text-primary);
+  --el-table-row-hover-bg-color: #f5f7fa;
 }
 
 :deep(.el-table__inner-wrapper::before) {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: #ebeef5;
 }
 
 :deep(.el-table td.el-table__cell),
 :deep(.el-table th.el-table__cell) {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-  background-color: transparent !important;
+  border-bottom: 1px solid #ebeef5 !important;
 }
 
-:deep(.el-table__body-wrapper) {
-  background-color: transparent !important;
-}
-
-:deep(.el-table__header-wrapper) {
-  background-color: transparent !important;
+:deep(.el-table th.el-table__cell) {
+  font-weight: 600;
+  letter-spacing: 1px;
 }
 
 /* 表格缩略图 */
@@ -557,59 +573,61 @@ const downloadAsset = (asset) => {
   height: 50px;
   border-radius: 4px;
   object-fit: cover;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(0, 242, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.table-thumbnail:hover {
+  border-color: var(--primary-color);
 }
 
 /* 暂无分析样式 */
 .no-analysis {
-  color: #6b7280;
+  color: var(--text-muted);
   font-style: italic;
   font-size: 12px;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;
+  flex-shrink: 0;
 }
 
 /* 分页组件深色主题适配 */
 :deep(.el-pagination) {
   --el-pagination-bg-color: transparent;
   --el-pagination-text-color: var(--text-secondary);
-  --el-pagination-button-bg-color: transparent;
+  --el-pagination-button-bg-color: rgba(255, 255, 255, 0.05);
   --el-pagination-button-disabled-bg-color: transparent;
   --el-pagination-hover-color: var(--primary-color);
 }
 
 :deep(.el-pagination .el-select .el-input .el-input__wrapper) {
-  background-color: transparent !important;
+  background-color: rgba(0, 0, 0, 0.2) !important;
   box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
 }
 
 :deep(.el-pagination .el-pager li) {
-  background: transparent !important;
+  background: #ffffff !important;
   color: var(--text-secondary) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  margin: 0 2px;
+  border: 1px solid #dcdfe6;
+  margin: 0 4px;
+  border-radius: 4px;
 }
 
 :deep(.el-pagination .el-pager li.is-active) {
   background: var(--primary-color) !important;
-  color: white !important;
+  color: #fff !important;
+  font-weight: bold;
   border-color: var(--primary-color);
 }
 
 :deep(.el-pagination .btn-prev),
 :deep(.el-pagination .btn-next) {
-  background: transparent !important;
+  background: #fff !important;
   color: var(--text-secondary) !important;
-}
-
-:deep(.el-pagination .el-pagination__jump) {
-  color: var(--text-secondary);
-}
-
-:deep(.el-pagination .el-pagination__jump .el-input .el-input__wrapper) {
-  background-color: transparent !important;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
-}
-
-:deep(.el-pagination .el-pagination__total) {
-  color: var(--text-secondary);
+  border: 1px solid #dcdfe6;
 }
 </style>

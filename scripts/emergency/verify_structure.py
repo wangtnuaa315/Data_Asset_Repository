@@ -103,20 +103,8 @@ class FileStructureVerifier:
                 description = rules.get('description', pattern)
                 return False, f"文件名不符合规范: {description}"
             
-            # 提取设备编码（从文件名中提取）
-            # 例如：alarm_001e67b2f0411310030522.jpg -> 001e67b2f0411310030522
-            try:
-                prefix = file_type.split('_')[0]  # alarm 或 channel
-                name_without_ext = Path(filename).stem
-                if name_without_ext.startswith(f"{prefix}_"):
-                    device_code = name_without_ext.split(f"{prefix}_", 1)[1]
-                    # 验证设备编码（只能包含字母和数字）
-                    if not re.match(r'^[a-zA-Z0-9]+$', device_code):
-                        return False, f"设备编码包含非法字符: {device_code}"
-                else:
-                    return False, f"文件名必须以 {prefix}_ 开头"
-            except:
-                return False, "无法解析设备编码"
+            # 正则验证通过即可，设备编码就是文件名（不含扩展名）
+            # 例如：328b8fa2e3844bfc8832b3e455c6fad8.png → 设备编码: 328b8fa2e3844bfc8832b3e455c6fad8
         
         # 检查文件名长度
         max_length = rules.get('max_length', 255)
@@ -244,21 +232,18 @@ class FileStructureVerifier:
             year = datetime.now().year
             quarter = f"{year}_Q{(datetime.now().month-1)//3 + 1}"
         
-        # 构建目标路径
+        # 构建目标路径（直接按告警类型分类，不按季度）
         target_path = os.path.join(
             self.official_lib,
             "02_应急_安全",
             f"02_{category}",
-            subcategory,
-            quarter
+            subcategory
         )
         
         result = {
             'industry': '应急_安全',
             'category': category,
             'subcategory': subcategory,
-            'year': year,
-            'quarter': quarter,
             'target_path': target_path
         }
         
@@ -345,6 +330,11 @@ class FileStructureVerifier:
             for filename in files:
                 # 跳过metadata_emergency.csv文件
                 if filename == 'metadata_emergency.csv':
+                    continue
+                # 跳过非图片文件（CSV、ZIP、Excel等源数据文件不参与验证）
+                file_ext = Path(filename).suffix.lower()
+                if file_ext in ['.csv', '.zip', '.xlsx', '.xls']:
+                    logger.info(f"⏭️ 跳过非图片文件: {filename}")
                     continue
                 # 每个文件名只记录第一次出现的路径
                 if filename not in files_to_process:

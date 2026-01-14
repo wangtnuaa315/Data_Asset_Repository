@@ -24,15 +24,15 @@ mysql:
 
 # 文件命名规范
 naming_rules:
-  # 告警图片命名规范：alarm_设备编码.扩展名
-  # 示例：alarm_001e67b2f0411310030522.jpg
+  # 告警图片命名规范：设备编码格式
+  # 支持格式：328b8fa2e3844bfc8832b3e455c6fad8.png 或 001e67b2f0411310030522.jpg
   alarm_image:
     allowed_extensions: ['.jpg', '.jpeg', '.png']
-    # 正则：alarm_开头 + 设备编码（字母数字） + 扩展名
-    pattern: '^alarm_[a-zA-Z0-9]+\\.(jpg|jpeg|png)$'
+    # 正则：设备编码（字母数字或下划线）+ 扩展名
+    pattern: '^[a-zA-Z0-9_]+\.(jpg|jpeg|png)$'
     max_length: 255
     illegal_chars: ['<', '>', ':', '"', '|', '?', '*', ' ']
-    description: '告警图片命名格式：alarm_设备编码.jpg'
+    description: '告警图片（设备编码.jpg/png格式）'
 
 # 支持的文件类型
 allowed_extensions:
@@ -49,3 +49,21 @@ allowed_extensions:
 logging:
   level: 'INFO'
   log_dir: '/opt/data_asset/logs'
+
+# 用户认证配置
+auth:
+  # JWT密钥（生产环境请修改）
+  secret_key: 'your-secret-key-change-in-production'
+  # Token过期时间（小时）
+  token_expire_hours: 24
+  
+  # 管理员账户（与FileBrowser保持一致）
+  admin:
+    username: 'admin'
+    password: 'admin'  # 与FileBrowser管理员密码一致
+  
+  # 普通用户账户
+  user:
+    username: 'user'
+    password: 'user123'
+
