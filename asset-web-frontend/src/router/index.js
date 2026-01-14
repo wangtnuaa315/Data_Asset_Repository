@@ -25,9 +25,30 @@ const routes = [
     },
     {
         path: '/admin',
-        name: 'Admin',
-        component: () => import('../views/Admin.vue'),
-        meta: { requiresAuth: true, requiresAdmin: true }
+        component: () => import('../views/admin/AdminLayout.vue'),
+        meta: { requiresAuth: true, requiresAdmin: true },
+        children: [
+            {
+                path: '',
+                name: 'AdminHub',
+                component: () => import('../views/admin/AdminHub.vue')
+            },
+            {
+                path: 'emergency',
+                name: 'AdminEmergency',
+                component: () => import('../views/admin/AdminEmergency.vue')
+            },
+            {
+                path: 'court',
+                name: 'AdminCourt',
+                component: () => import('../views/admin/AdminHub.vue') // 占位，复用 Hub
+            },
+            {
+                path: 'system',
+                name: 'AdminSystem',
+                component: () => import('../views/admin/AdminSystem.vue')
+            }
+        ]
     }
 ]
 
