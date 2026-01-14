@@ -131,22 +131,29 @@ onMounted(() => {
 </script>
 
 <style scoped>
+/* =====================================================
+   Bento Grids / Apple Style - App Layout
+   ===================================================== */
+
 .app-container {
   height: 100vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  background: transparent; /* 使用body的全局背景 */
+  background: transparent;
+  position: relative;
+  z-index: 1;
 }
 
+/* Bento 风格 Header - 纯白清爽 */
 .app-header {
-  /* 磨砂玻璃效果 Header */
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  background: #FFFFFF;
+  border-bottom: 1px solid var(--border-light, #E8E8ED);
+  box-shadow: 
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.03);
   z-index: 100;
+  position: relative;
 }
 
 .header-content {
@@ -165,49 +172,54 @@ onMounted(() => {
   gap: 16px;
 }
 
+/* Apple 风格用户信息 */
 .user-info {
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--text-secondary);
+  color: var(--text-secondary, #86868B);
   cursor: pointer;
-  padding: 6px 16px;
+  padding: 8px 16px;
   border-radius: 20px;
-  background: rgba(59, 130, 246, 0.08);
-  border: 1px solid rgba(59, 130, 246, 0.15);
+  background: rgba(0, 122, 255, 0.08);
+  border: 1px solid rgba(0, 122, 255, 0.15);
   transition: all 0.2s ease;
+  font-family: 'Inter', -apple-system, sans-serif;
+  font-size: 14px;
 }
 
 .user-info:hover {
-  background: rgba(59, 130, 246, 0.15);
-  color: var(--primary-color);
-  border-color: rgba(59, 130, 246, 0.3);
+  background: rgba(0, 122, 255, 0.15);
+  color: var(--primary-color, #007AFF);
+  border-color: rgba(0, 122, 255, 0.3);
 }
 
+/* Apple 风格 Logo */
 .logo {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: var(--primary-color);
-  font-size: 22px;
-  font-weight: 700;
-  font-family: var(--font-heading);
+  color: var(--primary-color, #007AFF);
+  font-size: 20px;
+  font-weight: 600;
+  font-family: 'Inter', -apple-system, sans-serif;
 }
 
 .logo-text {
-  background: var(--gradient-primary);
+  background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  letter-spacing: 0.5px;
+  letter-spacing: -0.3px;
 }
 
-/* 业务Tab栏样式 - 悬浮胶囊风格 */
+/* Bento 风格 Tab 栏 */
 .business-tabs {
-  background: transparent;
-  padding: 16px 32px 0;
+  background: #FFFFFF;
+  padding: 8px 32px 0;
   display: flex;
-  justify-content: center; /* 居中显示 */
+  justify-content: center;
+  border-bottom: 1px solid var(--border-light, #E8E8ED);
 }
 
 :deep(.el-tabs__header) {
@@ -219,39 +231,37 @@ onMounted(() => {
   display: none;
 }
 
-/* Tab项样式 */
+/* Apple 风格 Tab 项 */
 :deep(.el-tabs__item) {
-  color: var(--text-secondary);
+  color: var(--text-secondary, #86868B);
   font-size: 15px;
-  font-weight: 600;
-  padding: 0 32px !important;
-  height: 48px;
-  line-height: 48px;
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
+  font-weight: 500;
+  font-family: 'Inter', -apple-system, sans-serif;
+  padding: 0 28px !important;
+  height: 44px;
+  line-height: 44px;
+  transition: all 0.2s ease;
 }
 
 :deep(.el-tabs__item:hover) {
-  color: var(--primary-color);
+  color: var(--primary-color, #007AFF);
 }
 
 :deep(.el-tabs__item.is-active) {
-  color: var(--primary-color);
-  font-weight: bold;
+  color: var(--primary-color, #007AFF);
+  font-weight: 600;
 }
 
-/* 自定义底部激活条为发光背景 */
-/* 自定义底部激活条 */
+/* Apple 底部激活条 */
 :deep(.el-tabs__active-bar) {
   height: 3px;
-  background-color: var(--primary-color);
-  border-radius: 3px;
-  bottom: 0px;
+  background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+  border-radius: 3px 3px 0 0;
+  bottom: 0;
 }
 
 :deep(.el-tabs__item.is-disabled) {
-  color: var(--text-muted);
+  color: var(--text-muted, #AEAEB2);
   cursor: not-allowed;
   opacity: 0.6;
 }
@@ -266,13 +276,16 @@ onMounted(() => {
   margin-left: 6px;
   font-size: 10px;
   border: none;
+  border-radius: 10px;
 }
 
+/* 主内容区 */
 .app-main {
   flex: 1;
-  overflow: hidden;
+  overflow: auto;
   padding: 24px 32px;
   background: transparent;
   position: relative;
+  z-index: 1;
 }
 </style>

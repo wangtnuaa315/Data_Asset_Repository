@@ -363,36 +363,35 @@ const downloadAsset = (asset) => {
 </script>
 
 <style scoped>
+/* =====================================================
+   Bento Grids / Apple Style - Emergency Page
+   ===================================================== */
+
 .emergency-page {
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  overflow: hidden; /* 由内部容器滚动 */
+  gap: 20px;
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
 }
 
-/* 搜索区域增强 - 极简紧凑版 Flex布局 */
 /* =====================================================
-   搜索区域 - Visual Polish 用户指定规范
-   max-width: 1200px | 居中 | 56px 高度 | 16px 圆角
+   搜索区域 - Bento 白色卡片
    ===================================================== */
 .search-section {
-  /* 布局约束 - 不要占满全宽 */
   max-width: 1200px;
-  margin: 0 auto 16px auto;
+  margin: 0 auto;
+  padding: 24px 32px;
+  width: 100%;
   
-  /* 内边距 */
-  padding: 20px 32px;
-  
-  /* 强制 Glassmorphism */
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
-  
-  /* 圆润现代 */
-  border-radius: 16px;
+  /* Bento 风格白色卡片 */
+  background: #FFFFFF;
+  border-radius: 24px;
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 10px 20px rgba(0, 0, 0, 0.08);
 }
 
 .search-form-flex {
@@ -409,95 +408,160 @@ const downloadAsset = (asset) => {
   align-items: center;
 }
 
-/* 输入框增强 - 56px 高度, 16px 圆角 */
+/* Apple 风格输入框 - 52px 高度, 12px 圆角 */
 .search-section :deep(.el-input__wrapper),
 .search-section :deep(.el-select__wrapper) {
-  height: 56px !important;
-  border-radius: 16px !important;
-  padding: 0 20px !important;
+  height: 48px !important;
+  border-radius: 12px !important;
+  padding: 0 16px !important;
+  border: 1px solid #D2D2D7 !important;
+  box-shadow: none !important;
+  background: #FFFFFF !important;
+  transition: all 0.2s ease !important;
+}
+
+.search-section :deep(.el-input__wrapper:hover),
+.search-section :deep(.el-select__wrapper:hover) {
+  border-color: #86868B !important;
+}
+
+.search-section :deep(.el-input__wrapper.is-focus),
+.search-section :deep(.el-select__wrapper.is-focus) {
+  border-color: #007AFF !important;
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1) !important;
 }
 
 .search-section :deep(.el-input__inner) {
-  height: 54px !important;
-  line-height: 54px !important;
+  height: 46px !important;
+  line-height: 46px !important;
+  font-family: 'Inter', -apple-system, sans-serif !important;
+  font-size: 15px !important;
+  color: #1D1D1F !important;
 }
 
-/* 控件宽度控制 - 四个条件平均分配 */
+.search-section :deep(.el-input__inner::placeholder) {
+  color: #86868B !important;
+}
+
+.search-section :deep(.el-form-item__label) {
+  color: #1D1D1F;
+  font-weight: 500;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* 控件宽度 - 统一宽度 */
 .compact-input {
-  width: 180px !important;
+  width: 160px !important;
 }
 
 .compact-date {
-  width: 180px !important;
+  width: 160px !important;
 }
 
-/* 移除 small/medium 差异，统一宽度 */
+/* 日期选择器内部输入框缩小 */
+.search-section :deep(.el-date-editor) {
+  width: 160px !important;
+}
+
+.search-section :deep(.el-date-editor .el-range-input) {
+  width: 50px !important;
+  font-size: 13px !important;
+}
+
+.search-section :deep(.el-date-editor .el-range-separator) {
+  padding: 0 4px !important;
+  font-size: 12px !important;
+}
+
 .small-item .compact-input {
-  width: 140px !important;
+  width: 160px !important;
 }
 
 .medium-item .compact-input {
-  width: 180px !important;
+  width: 160px !important;
 }
 
 .search-actions-inline {
   display: flex;
-  gap: 8px;
-  margin-left: auto; /* 推到右侧，如需紧挨则去掉此行 */
+  gap: 10px;
+  margin-left: auto;
 }
 
-/* 移除不需要的header样式 */
+/* Apple 蓝色按钮 */
+.search-actions-inline :deep(.el-button--primary) {
+  background: #007AFF !important;
+  border-color: #007AFF !important;
+  border-radius: 12px !important;
+  height: 48px !important;
+  font-weight: 600 !important;
+  font-family: 'Inter', -apple-system, sans-serif !important;
+  padding: 0 24px !important;
+}
+
+.search-actions-inline :deep(.el-button--primary:hover) {
+  background: #0066CC !important;
+  border-color: #0066CC !important;
+}
+
+.reset-btn {
+  background: #F5F5F7 !important;
+  border-color: #D2D2D7 !important;
+  border-radius: 12px !important;
+  height: 48px !important;
+  color: #1D1D1F !important;
+  font-family: 'Inter', -apple-system, sans-serif !important;
+}
+
+.reset-btn:hover {
+  color: #007AFF !important;
+  border-color: #007AFF !important;
+  background: rgba(0, 122, 255, 0.08) !important;
+}
+
+/* 隐藏不需要的元素 */
 .search-header, .header-title, .header-decoration, .search-section::after {
   display: none;
 }
 
-/* 响应式调整 */
+/* 响应式 */
 @media (max-width: 1200px) {
   .search-actions-inline {
-    margin-left: 0; /* 小屏幕下不强推右侧 */
+    margin-left: 0;
   }
 }
 
-.reset-btn {
-  background: #f8f9fa;
-  border-color: #dcdfe6;
-}
-
-.reset-btn:hover {
-  color: var(--primary-color);
-  border-color: #b3d8ff;
-  background-color: #ecf5ff;
-}
-
-/* 结果统计栏 - 磨砂玻璃 */
+/* =====================================================
+   结果统计栏 - Bento 风格
+   ===================================================== */
 .results-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 24px;
-  /* Glass Effect */
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 12px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
-  margin-top: 12px;
+  padding: 16px 24px;
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .stats, .selected-info {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: var(--text-secondary);
+  color: #86868B;
   font-size: 14px;
+  font-family: 'Inter', -apple-system, sans-serif;
 }
 
 .stats strong, .selected-info strong {
-  color: var(--primary-color);
+  color: #007AFF;
   font-size: 18px;
   font-weight: 600;
-  text-shadow: none;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .loading-container {
@@ -507,87 +571,89 @@ const downloadAsset = (asset) => {
   align-items: center;
   justify-content: center;
   gap: 20px;
-  color: var(--primary-color);
-  text-shadow: 0 0 10px rgba(0, 242, 255, 0.4);
+  color: #007AFF;
 }
 
-/* 结果网格 - 添加动画 */
+/* =====================================================
+   结果网格 - Bento 风格
+   ===================================================== */
 .results-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  grid-auto-rows: 290px; /* 强制固定行高，防止卡片塌陷 */
-  gap: 24px;
+  grid-auto-rows: 290px;
+  gap: 20px;
   padding-bottom: 20px;
-  animation: fadeIn 0.5s ease-out;
+  animation: fadeIn 0.4s ease-out;
   flex: 1;
   overflow-y: auto;
-  min-height: 0; /* 允许flex子项滚动 */
-  padding-right: 4px; /* 防止滚动条遮挡 */
+  min-height: 0;
+  padding-right: 4px;
 }
 
-/* 列表视图容器 */
+/* 列表视图 */
 .results-list {
   flex: 1;
   min-height: 0;
-  border-radius: 8px;
+  border-radius: 16px;
   overflow: auto;
-  background: #ffffff;
-  border: 1px solid var(--border-color);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  animation: fadeIn 0.5s ease-out;
+  background: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  animation: fadeIn 0.4s ease-out;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 表格轻量化适配 */
+/* 表格适配 */
 :deep(.asset-table) {
-  --el-table-border-color: #ebeef5;
-  --el-table-header-bg-color: #f8f9fa;
-  --el-table-bg-color: #ffffff;
-  --el-table-tr-bg-color: #ffffff;
-  --el-table-text-color: var(--text-regular);
-  --el-table-header-text-color: var(--text-primary);
-  --el-table-row-hover-bg-color: #f5f7fa;
+  --el-table-border-color: #E8E8ED;
+  --el-table-header-bg-color: #F5F5F7;
+  --el-table-bg-color: #FFFFFF;
+  --el-table-tr-bg-color: #FFFFFF;
+  --el-table-text-color: #3C3C43;
+  --el-table-header-text-color: #1D1D1F;
+  --el-table-row-hover-bg-color: rgba(0, 122, 255, 0.04);
 }
 
 :deep(.el-table__inner-wrapper::before) {
-  background-color: #ebeef5;
+  background-color: #E8E8ED;
 }
 
 :deep(.el-table td.el-table__cell),
 :deep(.el-table th.el-table__cell) {
-  border-bottom: 1px solid #ebeef5 !important;
+  border-bottom: 1px solid #E8E8ED !important;
 }
 
 :deep(.el-table th.el-table__cell) {
   font-weight: 600;
-  letter-spacing: 1px;
+  font-family: 'Inter', -apple-system, sans-serif;
 }
 
-/* 表格缩略图 */
 .table-thumbnail {
   width: 80px;
   height: 50px;
-  border-radius: 4px;
+  border-radius: 8px;
   object-fit: cover;
-  border: 1px solid rgba(0, 242, 255, 0.2);
-  transition: all 0.3s ease;
+  border: 1px solid #E8E8ED;
+  transition: all 0.2s ease;
 }
 
 .table-thumbnail:hover {
-  border-color: var(--primary-color);
+  border-color: #007AFF;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.15);
 }
 
-/* 暂无分析样式 */
 .no-analysis {
-  color: var(--text-muted);
+  color: #AEAEB2;
   font-style: italic;
   font-size: 12px;
 }
 
+/* =====================================================
+   分页 - Apple 风格
+   ===================================================== */
 .pagination-container {
   display: flex;
   justify-content: center;
@@ -595,39 +661,44 @@ const downloadAsset = (asset) => {
   flex-shrink: 0;
 }
 
-/* 分页组件深色主题适配 */
 :deep(.el-pagination) {
   --el-pagination-bg-color: transparent;
-  --el-pagination-text-color: var(--text-secondary);
-  --el-pagination-button-bg-color: rgba(255, 255, 255, 0.05);
-  --el-pagination-button-disabled-bg-color: transparent;
-  --el-pagination-hover-color: var(--primary-color);
-}
-
-:deep(.el-pagination .el-select .el-input .el-input__wrapper) {
-  background-color: rgba(0, 0, 0, 0.2) !important;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+  --el-pagination-text-color: #86868B;
+  --el-pagination-hover-color: #007AFF;
 }
 
 :deep(.el-pagination .el-pager li) {
-  background: #ffffff !important;
-  color: var(--text-secondary) !important;
-  border: 1px solid #dcdfe6;
+  background: #FFFFFF !important;
+  color: #86868B !important;
+  border: 1px solid #D2D2D7;
   margin: 0 4px;
-  border-radius: 4px;
+  border-radius: 8px;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+:deep(.el-pagination .el-pager li:hover) {
+  color: #007AFF !important;
+  border-color: #007AFF;
 }
 
 :deep(.el-pagination .el-pager li.is-active) {
-  background: var(--primary-color) !important;
-  color: #fff !important;
-  font-weight: bold;
-  border-color: var(--primary-color);
+  background: #007AFF !important;
+  color: #FFFFFF !important;
+  font-weight: 600;
+  border-color: #007AFF;
 }
 
 :deep(.el-pagination .btn-prev),
 :deep(.el-pagination .btn-next) {
-  background: #fff !important;
-  color: var(--text-secondary) !important;
-  border: 1px solid #dcdfe6;
+  background: #FFFFFF !important;
+  color: #86868B !important;
+  border: 1px solid #D2D2D7;
+  border-radius: 8px;
+}
+
+:deep(.el-pagination .btn-prev:hover),
+:deep(.el-pagination .btn-next:hover) {
+  color: #007AFF !important;
+  border-color: #007AFF;
 }
 </style>

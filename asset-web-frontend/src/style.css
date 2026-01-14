@@ -1,52 +1,61 @@
 /* =====================================================
-   Light Glassmorphism Theme - 轻量化毛玻璃风格
+   Bento Grids / Apple Style Theme
+   米白背景 + 圆角卡片 + 柔和阴影
    ===================================================== */
 
-/* Google Fonts - Tech Startup 字体组合 */
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+/* Google Fonts - Inter (Apple 风格) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-  /* 字体 */
-  --font-heading: 'Space Grotesk', sans-serif;
-  --font-body: 'DM Sans', sans-serif;
+  /* 字体 - Apple 风格 */
+  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  /* Electric Blue 渐变主色 */
-  --primary-color: #3B82F6;
-  --primary-light: #60A5FA;
-  --primary-hover: #2563EB;
-  --primary-dim: rgba(59, 130, 246, 0.1);
-  --primary-glow: rgba(59, 130, 246, 0.4);
-  --gradient-primary: linear-gradient(135deg, #3B82F6 0%, #60A5FA 100%);
+  /* Apple 蓝色主色 */
+  --primary-color: #007AFF;
+  --primary-light: #5AC8FA;
+  --primary-hover: #0066CC;
+  --primary-dim: rgba(0, 122, 255, 0.1);
+  --primary-glow: rgba(0, 122, 255, 0.25);
+  --gradient-primary: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
 
   /* 辅助色 */
-  --secondary-color: #64748b;
-  --accent-color: #F97316;
+  --secondary-color: #86868B;
+  --accent-color: #FF9500;
+  --success-color: #34C759;
+  --danger-color: #FF3B30;
 
-  /* 背景色 - 不刺眼的浅色 */
-  --bg-primary: #F8FAFC;
-  --bg-secondary: #ffffff;
-  --bg-card: #ffffff;
-  --bg-hover: rgba(59, 130, 246, 0.05);
+  /* 背景色 - Bento 风格 */
+  --bg-primary: #F5F5F7;
+  --bg-secondary: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-hover: rgba(0, 122, 255, 0.05);
 
-  /* 毛玻璃效果 */
-  --glass-bg: rgba(255, 255, 255, 0.7);
-  --glass-border: rgba(255, 255, 255, 0.5);
-  --glass-blur: 10px;
+  /* 文字颜色 - Apple 风格 */
+  --text-primary: #1D1D1F;
+  --text-secondary: #86868B;
+  --text-muted: #AEAEB2;
+  --text-regular: #3C3C43;
 
-  /* 文字颜色 */
-  --text-primary: #1E293B;
-  --text-secondary: #475569;
-  --text-muted: #94A3B8;
-  --text-regular: #334155;
-
-  /* 边框与阴影 */
-  --border-color: #E2E8F0;
-  --border-glow: rgba(59, 130, 246, 0.3);
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
-  --shadow-glow: 0 0 20px var(--primary-glow);
-  --radius: 12px;
+  /* 边框与阴影 - Bento 风格 */
+  --border-color: #D2D2D7;
+  --border-light: #E8E8ED;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 10px 20px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 10px 20px rgba(0, 0, 0, 0.08),
+    0 20px 40px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 
+    0 8px 16px rgba(0, 0, 0, 0.08),
+    0 16px 32px rgba(0, 0, 0, 0.12);
+  
+  /* 圆角 - 大圆角 */
+  --radius: 24px;
+  --radius-sm: 12px;
+  --radius-xs: 8px;
 }
 
 * {
@@ -63,80 +72,82 @@ body,
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--bg-primary);
-  overflow: hidden;
+  overflow-x: hidden;
 }
 
 /* =====================================================
-   统一背景风格 - 与登录页一致
-   渐变背景 + 点阵纹理 + 光晕装饰
+   统一背景风格 - Bento + AI 科技背景
    ===================================================== */
 
 body {
-  /* 登录页同款渐变背景 */
-  background: linear-gradient(135deg, #F8FAFC 0%, #E0F2FE 50%, #DBEAFE 100%);
-
-  /* 点阵纹理 - 与登录页一致 */
+  /* Apple 风格米白背景 + 渐变光球 */
+  background: #F5F5F7;
   background-image:
-    url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg stroke='%233B82F6' stroke-opacity='0.05' stroke-width='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E"),
-    /* 左上角蓝色光晕 */
-    radial-gradient(800px circle at 0% 0%, rgba(59, 130, 246, 0.12) 0%, transparent 50%),
-    /* 右下角紫色光晕 */
-    radial-gradient(600px circle at 100% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
-    /* 基底渐变 */
-    linear-gradient(135deg, #F8FAFC 0%, #E0F2FE 50%, #DBEAFE 100%);
-
+    /* 左上角 - 蓝色光晕 */
+    radial-gradient(600px circle at 10% 20%,
+      rgba(0, 122, 255, 0.12) 0%,
+      transparent 50%),
+    /* 右下角 - 紫色光晕 */
+    radial-gradient(500px circle at 90% 80%,
+      rgba(88, 86, 214, 0.1) 0%,
+      transparent 50%),
+    /* 中间 - 淡粉色光晕 */
+    radial-gradient(400px circle at 50% 50%,
+      rgba(255, 45, 85, 0.05) 0%,
+      transparent 50%);
   color: var(--text-primary);
   position: relative;
   min-height: 100vh;
 }
 
+/* AI 科技背景图 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/ai_bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  opacity: 0.5;
+  z-index: 0;
+}
+
 /* =====================================================
-/* =====================================================
-   强制 Glassmorphism - 用户指定规范
-   背景: rgba(255,255,255,0.7) | blur: 12px
-   边框: rgba(255,255,255,0.6) | 阴影: 蓝调柔和
+   Bento 风格卡片
    ===================================================== */
 
+.bento-card,
 .glass-card {
-  /* 用户指定: 70% 透明白 */
-  background: rgba(255, 255, 255, 0.7);
-
-  /* 核心: 12px 毛玻璃模糊 */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-
-  /* 高亮描边 */
-  border: 1px solid rgba(255, 255, 255, 0.6);
-
-  /* 柔和蓝调阴影 */
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
-
-  /* 圆润现代圆角 */
-  border-radius: 16px;
-
+  background: #FFFFFF;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
 }
 
-/* 交互微效 - Hover */
+.bento-card:hover,
 .glass-card:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(31, 38, 135, 0.12);
+  box-shadow: var(--shadow-hover);
 }
 
-/* 兼容旧的 glass-effect 类 - 同样规范 */
+/* 兼容旧的 glass-effect 类 */
 .glass-effect {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07);
-  border-radius: 16px;
+  background: #FFFFFF;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-effect:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(31, 38, 135, 0.12);
+  box-shadow: var(--shadow-hover);
 }
 
 /* =====================================================
@@ -147,7 +158,7 @@ body {
 }
 
 .glow-hover:hover {
-  box-shadow: var(--shadow-glow);
+  box-shadow: 0 0 20px var(--primary-glow);
   transform: translateY(-2px);
 }
 
