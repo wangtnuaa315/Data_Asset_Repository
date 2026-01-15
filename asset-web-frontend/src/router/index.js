@@ -25,30 +25,9 @@ const routes = [
     },
     {
         path: '/admin',
-        component: () => import('../views/admin/AdminLayout.vue'),
-        meta: { requiresAuth: true, requiresAdmin: true },
-        children: [
-            {
-                path: '',
-                name: 'AdminHub',
-                component: () => import('../views/admin/AdminHub.vue')
-            },
-            {
-                path: 'emergency',
-                name: 'AdminEmergency',
-                component: () => import('../views/admin/AdminEmergency.vue')
-            },
-            {
-                path: 'court',
-                name: 'AdminCourt',
-                component: () => import('../views/admin/AdminHub.vue') // 占位，复用 Hub
-            },
-            {
-                path: 'system',
-                name: 'AdminSystem',
-                component: () => import('../views/admin/AdminSystem.vue')
-            }
-        ]
+        name: 'Admin',
+        component: () => import('../views/Admin.vue'),
+        meta: { requiresAuth: true }  // 所有登录用户可查看操作指南
     }
 ]
 

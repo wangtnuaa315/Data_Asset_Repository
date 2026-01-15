@@ -63,7 +63,7 @@
 
           <!-- 按钮组 -->
           <div class="search-actions-inline">
-            <el-button type="primary" :icon="Search" @click="handleSearch" :loading="loading">
+            <el-button type="primary" :icon="Search" @click="handleSearchClick" :loading="loading">
               检索
             </el-button>
             <el-button :icon="Refresh" @click="handleReset" class="reset-btn">
@@ -131,33 +131,46 @@
         row-key="asset_id"
         class="asset-table"
       >
-        <el-table-column type="selection" width="50" />
-        <el-table-column label="缩略图" width="100">
+        <el-table-column type="selection" width="45" />
+        <el-table-column label="" width="75">
           <template #default="{ row }">
-            <el-image
+            <img
               :src="row.thumbnail_url"
-              fit="cover"
               class="table-thumbnail"
-              style="cursor: default;"
+              alt=""
             />
           </template>
         </el-table-column>
         <el-table-column prop="filename" label="文件名" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="alarm_name" label="告警类型" width="150">
+        <el-table-column prop="dev_code" label="设备编码" min-width="200" show-overflow-tooltip>
+          <template #default="{ row }">
+            <span class="device-code">{{ row.dev_code || '-' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="alarm_name" label="告警类型" width="120">
           <template #default="{ row }">
             <el-tag type="warning" effect="dark" size="small">{{ row.alarm_name }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="alarm_time" label="告警时间" width="180">
           <template #default="{ row }">
-            {{ formatDate(row.alarm_time) }}
+            <span class="time-text">{{ formatDate(row.alarm_time) }}</span>
           </template>
         </el-table-column>
-
-        <el-table-column label="操作" width="160" fixed="right">
+        <el-table-column label="操作" width="120" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" link @click="showDetail(row)" size="small">详情</el-button>
-            <el-button type="success" link @click="downloadAsset(row)" size="small">下载</el-button>
+            <div class="action-btns">
+              <el-tooltip content="查看详情" placement="top">
+                <div class="action-icon" @click="showDetail(row)">
+                  <el-icon><View /></el-icon>
+                </div>
+              </el-tooltip>
+              <el-tooltip content="下载" placement="top">
+                <div class="action-icon download" @click="downloadAsset(row)">
+                  <el-icon><Download /></el-icon>
+                </div>
+              </el-tooltip>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -193,7 +206,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Search, Document, Loading, Warning, Cpu, Aim, Refresh, Download, Grid, List } from '@element-plus/icons-vue'
+import { Search, Document, Loading, Warning, Cpu, Aim, Refresh, Download, Grid, List, View } from '@element-plus/icons-vue'
 import api from '../api/emergency'
 import AssetCard from '../components/AssetCard.vue'
 import DetailModal from '../components/DetailModal.vue'
@@ -278,6 +291,12 @@ const handleSearch = async () => {
   } finally {
     loading.value = false
   }
+}
+
+// 搜索按钮点击 - 重置到第1页
+const handleSearchClick = () => {
+  currentPage.value = 1
+  handleSearch()
 }
 
 // 重置
@@ -700,5 +719,91 @@ const downloadAsset = (asset) => {
 :deep(.el-pagination .btn-next:hover) {
   color: #007AFF !important;
   border-color: #007AFF;
+}
+
+/* 列表视图表格优化 */
+.asset-table {
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.asset-table :deep(.el-table__header th) {
+  background: #FAFAFA;
+  font-weight: 600;
+  color: #86868B;
+  white-space: nowrap;
+}
+
+.asset-table :deep(.el-table__row td) {
+  vertical-align: middle;
+}
+
+.table-thumbnail {
+  width: 55px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.device-code {
+  font-family: 'SF Mono', 'Consolas', monospace;
+  font-size: 13px;
+  color: #555;
+  background: #F5F7FA;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.time-text {
+  font-size: 13px;
+  color: #86868B;
+  white-space: nowrap;
+  font-family: 'SF Mono', monospace;
+}
+
+/* 操作按钮 - Apple 风格图标 (最终修复版布局) */
+.action-btns {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.action-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  font-size: 18px;
+  color: #007AFF;
+  background: rgba(0, 122, 255, 0.08);
+  
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-icon .el-icon {
+  vertical-align: middle;
+}
+
+.action-icon:hover {
+  background: rgba(0, 122, 255, 0.15);
+  transform: scale(1.05);
+}
+
+.action-icon.download {
+  color: #34C759;
+  background: rgba(52, 199, 89, 0.08);
+}
+
+.action-icon.download:hover {
+  background: rgba(52, 199, 89, 0.15);
 }
 </style>

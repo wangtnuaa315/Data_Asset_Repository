@@ -8,13 +8,13 @@
           <span class="logo-text">数据资产检索系统</span>
         </div>
         <div class="header-actions">
-          <el-button
-            v-if="isLoggedIn"
-            :icon="Setting"
-            @click="goToAdmin"
-          >
-            管理中心
-          </el-button>
+          <!-- 操作指南入口 - 仅管理员可见 -->
+          <el-tooltip v-if="isAdmin" content="操作指南" placement="bottom">
+            <div class="help-btn" :class="{ 'pulse': showGuidePulse }" @click="goToAdmin">
+              <el-icon :size="20"><QuestionFilled /></el-icon>
+            </div>
+          </el-tooltip>
+          
           <el-dropdown v-if="isLoggedIn" @command="handleUserCommand">
             <span class="user-info">
               <el-icon><User /></el-icon>
@@ -66,7 +66,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { DataAnalysis, Warning, Document, Setting, User } from '@element-plus/icons-vue'
+import { DataAnalysis, Warning, Document, User, QuestionFilled } from '@element-plus/icons-vue'
 import authApi from './api/auth'
 
 const router = useRouter()
@@ -77,6 +77,19 @@ const activeTab = ref('emergency')
 const isLoggedIn = computed(() => authApi.isLoggedIn())
 const isAdmin = computed(() => authApi.isAdmin())
 const username = computed(() => localStorage.getItem('username') || '')
+
+// 操作指南动态引导 - 登录后短暂显示脉冲动画
+const showGuidePulse = ref(false)
+
+onMounted(() => {
+  // 登录后显示脉冲动画 5 秒
+  if (authApi.isLoggedIn()) {
+    showGuidePulse.value = true
+    setTimeout(() => {
+      showGuidePulse.value = false
+    }, 5000)
+  }
+})
 
 // 是否显示Header（登录页不显示）
 const showHeader = computed(() => {
@@ -95,11 +108,7 @@ const handleTabClick = (tab) => {
 }
 
 const goToAdmin = () => {
-  if (!isAdmin.value) {
-    ElMessage.warning('需要管理员权限，请使用admin账号登录')
-    router.push('/login')
-    return
-  }
+  showGuidePulse.value = false  // 停止动画
   router.push('/admin')
 }
 
@@ -170,6 +179,43 @@ onMounted(() => {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+/* 帮助按钮 - 动态引导 */
+.help-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background: rgba(0, 122, 255, 0.1);
+  color: #007AFF;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.help-btn:hover {
+  background: #007AFF;
+  color: white;
+  transform: scale(1.05);
+}
+
+/* 脉冲动画 - 吸引注意 */
+.help-btn.pulse {
+  animation: pulse-ring 1.5s ease-out infinite;
+}
+
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 122, 255, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(0, 122, 255, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 122, 255, 0);
+  }
 }
 
 /* Apple 风格用户信息 */

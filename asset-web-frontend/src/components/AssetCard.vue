@@ -194,8 +194,11 @@ const handleDownload = () => {
 }
 
 :deep(.el-checkbox__inner::after) {
-  left: 7px;
-  top: 3px;
+  left: 8px;
+  top: 5px;
+  width: 4px;
+  height: 8px;
+  border-width: 1px;
 }
 
 .card-checkbox {
