@@ -366,3 +366,18 @@ body::before {
   position: relative;
   z-index: 1;
 }
+
+/* =====================================================
+   对话框层级修复 - 确保在导航栏之上
+   ===================================================== */
+.el-overlay {
+  z-index: 2000 !important;
+}
+
+.el-dialog {
+  z-index: 2001 !important;
+}
+
+.el-dialog__wrapper {
+  z-index: 2000 !important;
+}

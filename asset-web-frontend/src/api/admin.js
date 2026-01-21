@@ -21,9 +21,31 @@ const adminApi = {
     /**
      * 上传文件
      */
-    async uploadFile(file, onProgress) {
+    async uploadFile(file, subdir = '') {
         const formData = new FormData()
         formData.append('file', file)
+        if (subdir) {
+            formData.append('subdir', subdir)
+        }
+
+        const response = await axios.post(`${API_BASE}/admin/upload`, formData, {
+            headers: {
+                ...authApi.getAuthHeaders(),
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        return response.data
+    },
+
+    /**
+     * 上传文件（带进度）
+     */
+    async uploadFileWithProgress(file, subdir = '', onProgress) {
+        const formData = new FormData()
+        formData.append('file', file)
+        if (subdir) {
+            formData.append('subdir', subdir)
+        }
 
         const response = await axios.post(`${API_BASE}/admin/upload`, formData, {
             headers: {
@@ -31,8 +53,8 @@ const adminApi = {
                 'Content-Type': 'multipart/form-data'
             },
             onUploadProgress: (progressEvent) => {
-                if (onProgress) {
-                    const percent = Math.round((progressEvent.loaded * 100) / progressEvent.total)
+                if (onProgress && progressEvent.total) {
+                    const percent = (progressEvent.loaded * 100) / progressEvent.total
                     onProgress(percent)
                 }
             }

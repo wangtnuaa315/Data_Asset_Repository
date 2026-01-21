@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>管理中心 - 方案 B Demo</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Bento Grids / Apple Style */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            background: #F5F5F7;
+            background-image:
+                radial-gradient(600px circle at 10% 20%, rgba(0, 122, 255, 0.12) 0%, transparent 50%),
+                radial-gradient(500px circle at 90% 80%, rgba(88, 86, 214, 0.1) 0%, transparent 50%);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* 顶部栏 */
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 32px;
+            background: #FFFFFF;
+            border-bottom: 1px solid #E8E8ED;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-left h1 {
+            font-size: 20px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-icon {
+            width: 24px;
+            height: 24px;
+            fill: #007AFF;
+        }
+
+        .back-btn {
+            padding: 10px 20px;
+            border: 1px solid #D2D2D7;
+            border-radius: 12px;
+            background: #F5F5F7;
+            color: #1D1D1F;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .back-btn:hover {
+            border-color: #007AFF;
+            color: #007AFF;
+        }
+
+        /* 主体布局 */
+        .admin-body {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 32px;
+        }
+
+        /* 业务选择器 */
+        .business-selector {
+            margin-bottom: 32px;
+        }
+
+        .selector-label {
+            font-size: 14px;
+            color: #86868B;
+            margin-bottom: 12px;
+        }
+
+        .selector-tabs {
+            display: flex;
+            gap: 12px;
+        }
+
+        .selector-tab {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 16px 24px;
+            background: #FFFFFF;
+            border: 2px solid transparent;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .selector-tab:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .selector-tab.active {
+            border-color: #007AFF;
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+        }
+
+        .tab-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .tab-icon.emergency {
+            background: linear-gradient(135deg, #FF3B30 0%, #FF9500 100%);
+        }
+
+        .tab-icon.court {
+            background: linear-gradient(135deg, #5856D6 0%, #AF52DE 100%);
+        }
+
+        .tab-info h3 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1D1D1F;
+        }
+
+        .tab-info p {
+            font-size: 12px;
+            color: #86868B;
+            margin-top: 2px;
+        }
+
+        .coming-soon {
+            font-size: 10px;
+            padding: 3px 8px;
+            background: #E8E8ED;
+            color: #86868B;
+            border-radius: 6px;
+            margin-left: 8px;
+        }
+
+        /* 两栏布局 */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .panel {
+            background: #FFFFFF;
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .panel-header h2 {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1D1D1F;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-icon {
+            width: 20px;
+            height: 20px;
+            fill: #007AFF;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #007AFF;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #0066CC;
+        }
+
+        .btn-secondary {
+            background: #F5F5F7;
+            color: #1D1D1F;
+            border: 1px solid #D2D2D7;
+        }
+
+        .btn-secondary:hover {
+            border-color: #007AFF;
+            color: #007AFF;
+        }
+
+        /* 文件列表 */
+        .file-list {
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 12px;
+            transition: background 0.2s;
+        }
+
+        .file-item:hover {
+            background: rgba(0, 122, 255, 0.05);
+        }
+
+        .file-icon {
+            width: 36px;
+            height: 36px;
+            background: #F5F5F7;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .file-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: #86868B;
+        }
+
+        .file-icon.folder svg {
+            fill: #007AFF;
+        }
+
+        .file-name {
+            flex: 1;
+            font-size: 14px;
+            color: #1D1D1F;
+        }
+
+        .file-size {
+            font-size: 12px;
+            color: #AEAEB2;
+        }
+
+        .file-delete {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(255, 59, 48, 0.1);
+            border: none;
+            color: #FF3B30;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* 脚本列表 */
+        .script-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .script-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: #F5F5F7;
+            border-radius: 12px;
+        }
+
+        .script-info h4 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1D1D1F;
+            margin-bottom: 4px;
+        }
+
+        .script-info p {
+            font-size: 12px;
+            color: #86868B;
+        }
+
+        .script-badge {
+            font-size: 10px;
+            padding: 3px 8px;
+            background: rgba(0, 122, 255, 0.1);
+            color: #007AFF;
+            border-radius: 6px;
+            margin-left: 8px;
+        }
+
+        /* 日志区域 */
+        .log-section {
+            margin-top: 24px;
+        }
+
+        .log-section h3 {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1D1D1F;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .log-content {
+            background: #1D1D1F;
+            border-radius: 12px;
+            padding: 16px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .log-content pre {
+            color: #86868B;
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-size: 12px;
+            margin: 0;
+        }
+
+        .log-content .success {
+            color: #34C759;
+        }
+
+        .log-content .time {
+            color: #5AC8FA;
+        }
+
+        /* 当前业务标识 */
+        .current-business {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: rgba(255, 59, 48, 0.1);
+            color: #FF3B30;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-left: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 顶部栏 -->
+    <header class="admin-header">
+        <div class="header-left">
+            <svg class="header-icon" viewBox="0 0 24 24">
+                <path
+                    d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z" />
+            </svg>
+            <h1>管理中心</h1>
+        </div>
+        <button class="back-btn">← 返回检索</button>
+    </header>
+
+    <div class="admin-body">
+        <!-- 业务选择器 -->
+        <div class="business-selector">
+            <div class="selector-label">选择业务模块</div>
+            <div class="selector-tabs">
+                <div class="selector-tab active" onclick="selectBusiness('emergency')">
+                    <div class="tab-icon emergency">🚨</div>
+                    <div class="tab-info">
+                        <h3>应急安全</h3>
+                        <p>告警图片 / AI分析数据</p>
+                    </div>
+                </div>
+                <div class="selector-tab" onclick="selectBusiness('court')">
+                    <div class="tab-icon court">⚖️</div>
+                    <div class="tab-info">
+                        <h3>法院案件</h3>
+                        <p>案件资料 / 法律文书</p>
+                    </div>
+                    <span class="coming-soon">即将上线</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 两栏内容 -->
+        <div class="content-grid">
+            <!-- 左侧：文件管理 -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>
+                        <svg class="panel-icon" viewBox="0 0 24 24">
+                            <path
+                                d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
+                        </svg>
+                        文件管理
+                        <span class="current-business">📁 应急安全</span>
+                    </h2>
+                    <div class="btn-group">
+                        <button class="btn btn-primary">📤 上传文件</button>
+                        <button class="btn btn-secondary">🔄 刷新</button>
+                    </div>
+                </div>
+
+                <div class="file-list">
+                    <div class="file-item">
+                        <div class="file-icon folder"><svg viewBox="0 0 24 24">
+                                <path
+                                    d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z" />
+                            </svg></div>
+                        <span class="file-name">emergency_images/</span>
+                        <span class="file-size">12 文件</span>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-icon"><svg viewBox="0 0 24 24">
+                                <path
+                                    d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+                            </svg></div>
+                        <span class="file-name">alarm_data_2024.csv</span>
+                        <span class="file-size">2.3 MB</span>
+                        <button class="file-delete">×</button>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-icon"><svg viewBox="0 0 24 24">
+                                <path
+                                    d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+                            </svg></div>
+                        <span class="file-name">device_mapping.xlsx</span>
+                        <span class="file-size">156 KB</span>
+                        <button class="file-delete">×</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧：脚本执行 -->
+            <div class="panel">
+                <div class="panel-header">
+                    <h2>
+                        <svg class="panel-icon" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z" />
+                        </svg>
+                        脚本执行
+                        <span class="current-business">🚨 应急安全</span>
+                    </h2>
+                </div>
+
+                <div class="script-list">
+                    <div class="script-item">
+                        <div class="script-info">
+                            <h4>1. 解析元数据 <span class="script-badge">应急安全</span></h4>
+                            <p>解析 CSV/Excel，提取告警信息</p>
+                        </div>
+                        <button class="btn btn-primary">▶ 执行</button>
+                    </div>
+                    <div class="script-item">
+                        <div class="script-info">
+                            <h4>2. 图片分类 <span class="script-badge">应急安全</span></h4>
+                            <p>按告警类型归档图片文件</p>
+                        </div>
+                        <button class="btn btn-primary">▶ 执行</button>
+                    </div>
+                    <div class="script-item">
+                        <div class="script-info">
+                            <h4>3. 数据导入 <span class="script-badge">应急安全</span></h4>
+                            <p>导入资产到数据库</p>
+                        </div>
+                        <button class="btn btn-primary">▶ 执行</button>
+                    </div>
+                </div>
+
+                <!-- 执行日志 -->
+                <div class="log-section">
+                    <h3>📋 执行日志</h3>
+                    <div class="log-content">
+                        <pre><span class="time">[10:32:15]</span> 开始执行: 解析元数据
+<span class="time">[10:32:16]</span> 读取文件: alarm_data_2024.csv
+<span class="time">[10:32:18]</span> 解析完成: 1,234 条记录
+<span class="success">✅ 执行成功</span></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function selectBusiness(type) {
+            document.querySelectorAll('.selector-tab').forEach(tab => tab.classList.remove('active'));
+            event.currentTarget.classList.add('active');
+
+            const businessNames = {
+                emergency: '应急安全',
+                court: '法院案件'
+            };
+
+            document.querySelectorAll('.current-business').forEach(badge => {
+                badge.textContent = type === 'emergency' ? '🚨 应急安全' : '⚖️ 法院案件';
+            });
+        }
+    </script>
+</body>
+
+</html>

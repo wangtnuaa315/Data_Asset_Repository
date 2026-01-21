@@ -305,17 +305,17 @@ class MetadataParser:
         source_table = self.detect_table_source(records, filename)
         config = self.table_configs[source_table]
         
-        # 处理每条记录
+        # 处理每条记录 - 检查多个图片字段
+        # 图片可能在 ALARM_IMG、img2、same_img 等字段中
+        image_fields = [
+            config['image_field'],  # ALARM_IMG
+            'img2',
+            'same_img'
+        ]
+        
         for record in records:
-            image_path = record.get(config['image_field'], '')
-            image_filename = self.extract_filename_from_path(image_path)
-            
-            if not image_filename:
-                continue
-            
-            # 构建统一格式的元数据
+            # 构建基础元数据
             metadata = {
-                'filename': image_filename,
                 'alarm_name': record.get(config['alarm_name_field'], ''),
                 'alarm_time': record.get(config['alarm_time_field'], ''),
                 'device_code': record.get(config['device_code_field'], ''),
@@ -323,7 +323,22 @@ class MetadataParser:
                 'source_table': source_table,
             }
             
-            self.metadata_records[image_filename] = metadata
+            # 检查每个图片字段
+            for field in image_fields:
+                image_path = record.get(field, '')
+                if not image_path:
+                    continue
+                    
+                image_filename = self.extract_filename_from_path(image_path)
+                if not image_filename:
+                    continue
+                
+                # 添加到记录（如果还未存在）
+                if image_filename not in self.metadata_records:
+                    self.metadata_records[image_filename] = {
+                        'filename': image_filename,
+                        **metadata
+                    }
         
         logger.info(f"📊 已加载 {len(records)} 条记录，来源表: {source_table}")
     

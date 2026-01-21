@@ -43,17 +43,25 @@
             </span>
           </template>
         </el-tab-pane>
-        <el-tab-pane name="court" disabled>
+        <el-tab-pane name="court">
           <template #label>
             <span class="tab-label">
               <el-icon><Document /></el-icon>
               <span>法院案件</span>
-              <el-tag size="small" type="info">即将上线</el-tag>
+            </span>
+          </template>
+        </el-tab-pane>
+        <el-tab-pane name="legal">
+          <template #label>
+            <span class="tab-label">
+              <el-icon><Reading /></el-icon>
+              <span>法律文书</span>
             </span>
           </template>
         </el-tab-pane>
       </el-tabs>
     </nav>
+
 
     <!-- 主内容区 -->
     <main class="app-main">
@@ -66,7 +74,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { DataAnalysis, Warning, Document, User, QuestionFilled } from '@element-plus/icons-vue'
+import { DataAnalysis, Warning, Document, User, QuestionFilled, Reading } from '@element-plus/icons-vue'
 import authApi from './api/auth'
 
 const router = useRouter()
@@ -102,9 +110,7 @@ const showTabs = computed(() => {
 })
 
 const handleTabClick = (tab) => {
-  if (tab.paneName !== 'court') {
-    router.push(`/${tab.paneName}`)
-  }
+  router.push(`/${tab.paneName}`)
 }
 
 const goToAdmin = () => {

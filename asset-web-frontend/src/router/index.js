@@ -24,6 +24,18 @@ const routes = [
         meta: { requiresAuth: true }
     },
     {
+        path: '/court',
+        name: 'Court',
+        component: () => import('../views/Court.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/legal',
+        name: 'Legal',
+        component: () => import('../views/Legal.vue'),
+        meta: { requiresAuth: true }
+    },
+    {
         path: '/admin',
         name: 'Admin',
         component: () => import('../views/Admin.vue'),
