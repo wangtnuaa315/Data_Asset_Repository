@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>告警列表样式预览 (最终修复版)</title>
+    <!-- 引入 Element Plus 样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css" />
+    <!-- 引入字体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: #F5F7FA;
+            margin: 0;
+            padding: 40px;
+        }
+
+        .demo-container {
+            background: #FFFFFF;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .asset-table {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #F2F2F5;
+        }
+
+        .asset-table :deep(th.el-table__cell) {
+            background-color: #F8F9FA !important;
+            color: #1D1D1F;
+            font-weight: 600;
+            height: 50px;
+            border-bottom: 1px solid #E5E5E5;
+        }
+
+        .asset-table :deep(td.el-table__cell) {
+            padding: 12px 0;
+        }
+
+        /* 缩略图 */
+        .table-thumbnail {
+            width: 55px;
+            height: 40px;
+            border-radius: 6px;
+            object-fit: cover;
+            display: block;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 操作按钮样式 - 严格居中 */
+        .action-btns {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+        }
+
+        .action-icon {
+            width: 32px;
+            /* 固定大小容器 */
+            height: 32px;
+            border-radius: 8px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 18px;
+            /* 图标大小 */
+            color: #007AFF;
+            background: rgba(0, 122, 255, 0.08);
+
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-icon .el-icon {
+            vertical-align: middle;
+        }
+
+        .action-icon:hover {
+            background: rgba(0, 122, 255, 0.15);
+            transform: scale(1.05);
+        }
+
+        .action-icon.download {
+            color: #34C759;
+            background: rgba(52, 199, 89, 0.08);
+        }
+
+        .action-icon.download:hover {
+            background: rgba(52, 199, 89, 0.15);
+        }
+
+        /* 其他列样式 */
+        .device-code {
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-size: 13px;
+            color: #555;
+            background: #F5F7FA;
+            padding: 4px 8px;
+            border-radius: 4px;
+            display: inline-block;
+        }
+
+        .time-text {
+            font-size: 13px;
+            color: #86868B;
+            white-space: nowrap;
+            font-family: 'SF Mono', monospace;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="demo-container">
+            <h2 style="margin-bottom: 20px; color: #333;">最终效果预览 (修复版)</h2>
+
+            <el-table :data="tableData" style="width: 100%" row-key="id" class="asset-table">
+                <el-table-column type="selection" width="45"></el-table-column>
+
+                <el-table-column label="" width="80">
+                    <template #default="{ row }">
+                        <img :src="row.thumbnail" class="table-thumbnail" alt="">
+                    </template>
+                </el-table-column>
+
+                <el-table-column prop="filename" label="文件名" min-width="200" show-overflow-tooltip></el-table-column>
+
+                <el-table-column label="设备编码" min-width="200" show-overflow-tooltip>
+                    <template #default="{ row }">
+                        <span class="device-code">{{ row.dev_code }}</span>
+                    </template>
+                </el-table-column>
+
+                <el-table-column prop="alarm_type" label="告警类型" width="120">
+                    <template #default="{ row }">
+                        <el-tag type="warning" effect="dark" size="small">{{ row.alarm_type }}</el-tag>
+                    </template>
+                </el-table-column>
+
+                <el-table-column label="告警时间" width="180">
+                    <template #default="{ row }">
+                        <span class="time-text">{{ row.alarm_time }}</span>
+                    </template>
+                </el-table-column>
+
+                <el-table-column label="操作" width="120" fixed="right">
+                    <template #default="{ row }">
+                        <div class="action-btns">
+                            <el-tooltip content="查看详情" placement="top">
+                                <!-- 下方使用 kebab-case <view-icon> 以避免 HTML 解析问题 -->
+                                <div class="action-icon">
+                                    <el-icon><view-icon /></el-icon>
+                                </div>
+                            </el-tooltip>
+                            <el-tooltip content="下载" placement="top">
+                                <div class="action-icon download">
+                                    <el-icon><download-icon /></el-icon>
+                                </div>
+                            </el-tooltip>
+                        </div>
+                    </template>
+                </el-table-column>
+            </el-table>
+        </div>
+    </div>
+
+    <!-- 引入 Vue 和 Element Plus -->
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/element-plus"></script>
+    <script src="https://unpkg.com/@element-plus/icons-vue"></script>
+
+    <script>
+        const { createApp, ref } = Vue;
+        const Icons = ElementPlusIconsVue;
+
+        const app = createApp({
+            setup() {
+                const tableData = ref([
+                    {
+                        id: 1,
+                        thumbnail: 'https://images.unsplash.com/photo-1504384764586-bb4cdc1707b0?q=80&w=200&auto=format&fit=crop',
+                        filename: '3c32a17db94b4dd6b4fca12cbd969005.png',
+                        dev_code: '33021300001310335008',
+                        alarm_type: '火点检测',
+                        alarm_time: '2025-11-14 18:25:17'
+                    },
+                    {
+                        id: 2,
+                        thumbnail: 'https://images.unsplash.com/photo-1606167668584-78701c57f13d?q=80&w=200&auto=format&fit=crop',
+                        filename: '1e0a6a91937b4bdaa7ca6b8140ae0ac2.png',
+                        dev_code: '33028200001310998018',
+                        alarm_type: '火点检测',
+                        alarm_time: '2025-11-14 20:07:49'
+                    },
+                    {
+                        id: 3,
+                        thumbnail: 'https://images.unsplash.com/photo-1486334803289-1623f249dd1e?q=80&w=200&auto=format&fit=crop',
+                        filename: '257d752219ea45fe86fc2e51b8a3990b.png',
+                        dev_code: '33022500001310165103',
+                        alarm_type: '烟雾检测',
+                        alarm_time: '2025-11-14 15:25:45'
+                    }
+                ]);
+
+                return {
+                    tableData
+                };
+            }
+        });
+
+        // 注册图标，使用 view-icon 名称
+        app.component('view-icon', Icons.View);
+        // 下载图标同理
+        app.component('download-icon', Icons.Download);
+
+        app.use(ElementPlus);
+        app.mount('#app');
+    </script>
+</body>
+
+</html>

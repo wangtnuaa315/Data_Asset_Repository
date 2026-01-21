@@ -71,9 +71,14 @@ services:
     ports:
       - "8003:8000"
     volumes:
-      - /data/nas_data:/data/nas_data:ro
+      - /data/nas_data:/data/nas_data:rw
+      - ./config.yaml:/app/config.yaml
+      - ./config.yaml:/opt/data_asset/config.yaml
+      - ./scripts:/opt/data_asset/scripts
+      - ./logs:/opt/data_asset/logs
     environment:
       - DATABASE_URL=postgresql://admin:Huaiye@2020**@db:5432/asset_catalog
+      - TZ=Asia/Shanghai
     networks:
       - asset_net
     depends_on:
@@ -90,6 +95,8 @@ services:
     restart: always
     ports:
       - "8082:80"
+    environment:
+      - TZ=Asia/Shanghai
     networks:
       - asset_net
     depends_on:

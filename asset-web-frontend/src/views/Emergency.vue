@@ -2,95 +2,76 @@
   <div class="emergency-page">
     <!-- 搜索区域 -->
     <!-- 搜索区域 -->
-    <div class="search-section glass-effect">
-      <div class="search-header">
-        <div class="header-title glow-text">
-          <el-icon :size="20"><Search /></el-icon>
-          <span>智能检索</span>
-        </div>
-        <div class="header-decoration"></div>
-      </div>
-
-      <el-form :model="searchForm" label-position="top" class="search-form">
-        <el-row :gutter="20">
+    <div class="search-section">
+      <!-- 移除独立的header，将标题整合到表单或直接简化 -->
+      <div class="search-compact-wrapper">
+        <el-form :model="searchForm" class="search-form-flex" :inline="true">
           <!-- 告警类型 -->
-          <el-col :xs="24" :sm="12" :md="6" :lg="6">
-            <el-form-item label="告警类型">
-              <el-select
-                v-model="searchForm.alarm_types"
-                multiple
-                collapse-tags
-                collapse-tags-tooltip
-                placeholder="全部类型"
-                clearable
-                class="tech-input"
-              >
-                <template #prefix><el-icon><Warning /></el-icon></template>
-                <el-option
-                  v-for="type in alarmTypes"
-                  :key="type"
-                  :label="type"
-                  :value="type"
-                />
-              </el-select>
-            </el-form-item>
-          </el-col>
+          <el-form-item label="告警类型" class="compact-item">
+            <el-select
+              v-model="searchForm.alarm_types"
+              multiple
+              collapse-tags
+              collapse-tags-tooltip
+              placeholder="全部类型"
+              clearable
+              class="compact-input"
+            >
+              <el-option
+                v-for="type in alarmTypes"
+                :key="type"
+                :label="type"
+                :value="type"
+              />
+            </el-select>
+          </el-form-item>
 
           <!-- 时间范围 -->
-          <el-col :xs="24" :sm="12" :md="8" :lg="8">
-            <el-form-item label="时间范围">
-              <el-date-picker
-                v-model="dateRange"
-                type="daterange"
-                range-separator="-"
-                start-placeholder="开始"
-                end-placeholder="结束"
-                value-format="YYYY-MM-DD"
-                :shortcuts="dateShortcuts"
-                class="tech-input date-range-full"
-              />
-            </el-form-item>
-          </el-col>
+          <el-form-item label="时间范围" class="compact-item">
+            <el-date-picker
+              v-model="dateRange"
+              type="daterange"
+              range-separator="-"
+              start-placeholder="开始"
+              end-placeholder="结束"
+              value-format="YYYY-MM-DD"
+              :shortcuts="dateShortcuts"
+              class="compact-date"
+            />
+          </el-form-item>
 
-          <!-- 设备和关键词 -->
-          <el-col :xs="24" :sm="12" :md="5" :lg="5">
-             <el-form-item label="设备编码">
-               <el-input 
-                 v-model="searchForm.dev_code" 
-                 placeholder="设备ID" 
-                 clearable
-                 class="tech-input"
-               >
-                 <template #prefix><el-icon><Cpu /></el-icon></template>
-               </el-input>
-             </el-form-item>
-          </el-col>
+          <!-- 设备编码 -->
+          <el-form-item label="设备" class="compact-item small-item">
+             <el-input 
+               v-model="searchForm.dev_code" 
+               placeholder="ID" 
+               clearable
+               class="compact-input"
+             />
+          </el-form-item>
 
-          <el-col :xs="24" :sm="12" :md="5" :lg="5">
-              <el-form-item label="AI分析关键词">
-                <el-input 
-                  v-model="searchForm.keyword" 
-                  placeholder="如: 火点, 烟雾..." 
-                  clearable
-                  class="tech-input"
-                  @keyup.enter="handleSearch"
-                >
-                  <template #prefix><el-icon><Aim /></el-icon></template>
-                </el-input>
-              </el-form-item>
-          </el-col>
-        </el-row>
-        
-        <!-- 搜索按钮栏 (浮动在右下或独立一行) -->
-        <div class="search-actions">
-           <el-button type="primary" :icon="Search" @click="handleSearch" :loading="loading" class="action-btn">
-             立即检索
-           </el-button>
-           <el-button :icon="Refresh" @click="handleReset" class="reset-btn">
-             重置条件
-           </el-button>
-        </div>
-      </el-form>
+          <!-- 关键词 -->
+          <el-form-item label="关键词" class="compact-item medium-item">
+            <el-input 
+              v-model="searchForm.keyword" 
+              placeholder="AI分析..." 
+              clearable
+              class="compact-input"
+              @keyup.enter="handleSearch"
+            />
+          </el-form-item>
+
+          <!-- 按钮组 -->
+          <div class="search-actions-inline">
+            <el-button type="primary" :icon="Search" @click="handleSearchClick" :loading="loading">
+              检索
+            </el-button>
+            <el-button :icon="Refresh" @click="handleReset" class="reset-btn">
+              重置
+            </el-button>
+          </div>
+        </el-form>
+      </div>
     </div>
 
     <!-- 结果统计 -->
@@ -150,40 +131,46 @@
         row-key="asset_id"
         class="asset-table"
       >
-        <el-table-column type="selection" width="50" />
-        <el-table-column label="缩略图" width="100">
+        <el-table-column type="selection" width="45" />
+        <el-table-column label="" width="75">
           <template #default="{ row }">
-            <el-image
+            <img
               :src="row.thumbnail_url"
-              :preview-src-list="[row.thumbnail_url.replace('/thumbnail/', '/download/')]"
-              fit="cover"
               class="table-thumbnail"
+              alt=""
             />
           </template>
         </el-table-column>
         <el-table-column prop="filename" label="文件名" min-width="200" show-overflow-tooltip />
-        <el-table-column prop="alarm_name" label="告警类型" width="150">
+        <el-table-column prop="dev_code" label="设备编码" min-width="200" show-overflow-tooltip>
+          <template #default="{ row }">
+            <span class="device-code">{{ row.dev_code || '-' }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="alarm_name" label="告警类型" width="120">
           <template #default="{ row }">
             <el-tag type="warning" effect="dark" size="small">{{ row.alarm_name }}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="alarm_time" label="告警时间" width="180">
           <template #default="{ row }">
-            {{ formatDate(row.alarm_time) }}
+            <span class="time-text">{{ formatDate(row.alarm_time) }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="analysis" label="AI分析" width="150">
+        <el-table-column label="操作" width="120" fixed="right">
           <template #default="{ row }">
-            <el-tag v-if="row.analysis && row.analysis.trim()" type="success" effect="dark" size="small">
-              {{ row.analysis }}
-            </el-tag>
-            <span v-else class="no-analysis">暂无</span>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="160" fixed="right">
-          <template #default="{ row }">
-            <el-button type="primary" link @click="showDetail(row)" size="small">详情</el-button>
-            <el-button type="success" link @click="downloadAsset(row)" size="small">下载</el-button>
+            <div class="action-btns">
+              <el-tooltip content="查看详情" placement="top">
+                <div class="action-icon" @click="showDetail(row)">
+                  <el-icon><View /></el-icon>
+                </div>
+              </el-tooltip>
+              <el-tooltip content="下载" placement="top">
+                <div class="action-icon download" @click="downloadAsset(row)">
+                  <el-icon><Download /></el-icon>
+                </div>
+              </el-tooltip>
+            </div>
           </template>
         </el-table-column>
       </el-table>
@@ -219,7 +206,7 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Search, Document, Loading, Warning, Cpu, Aim, Refresh, Download, Grid, List } from '@element-plus/icons-vue'
+import { Search, Document, Loading, Warning, Cpu, Aim, Refresh, Download, Grid, List, View } from '@element-plus/icons-vue'
 import api from '../api/emergency'
 import AssetCard from '../components/AssetCard.vue'
 import DetailModal from '../components/DetailModal.vue'
@@ -306,6 +293,12 @@ const handleSearch = async () => {
   }
 }
 
+// 搜索按钮点击 - 重置到第1页
+const handleSearchClick = () => {
+  currentPage.value = 1
+  handleSearch()
+}
+
 // 重置
 const handleReset = () => {
   Object.assign(searchForm, {
@@ -389,106 +382,205 @@ const downloadAsset = (asset) => {
 </script>
 
 <style scoped>
+/* =====================================================
+   Bento Grids / Apple Style - Emergency Page
+   ===================================================== */
+
 .emergency-page {
   height: 100%;
   display: flex;
   flex-direction: column;
   gap: 20px;
-  overflow: auto;
-}
-
-.search-section {
-  flex-shrink: 0;
-  padding: 20px 24px;
-  border-radius: 12px;
-  margin-bottom: 24px;
-  position: relative;
   overflow: hidden;
-}
-
-.search-section::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, var(--primary-color), transparent);
-  opacity: 0.5;
-}
-
-.search-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.header-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-size: 16px;
-  font-weight: 600;
-  color: var(--primary-color);
-  letter-spacing: 1px;
-}
-
-.search-form {
   position: relative;
+  z-index: 1;
 }
 
-/* 覆盖Element Form Item样式 */
-:deep(.el-form-item__label) {
-  color: var(--text-secondary);
-  font-size: 12px;
-  padding-bottom: 4px;
-}
-
-.tech-input {
+/* =====================================================
+   搜索区域 - Bento 白色卡片
+   ===================================================== */
+.search-section {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 32px;
   width: 100%;
+  
+  /* Bento 风格白色卡片 */
+  background: #FFFFFF;
+  border-radius: 24px;
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 10px 20px rgba(0, 0, 0, 0.08);
 }
 
-.date-range-full {
-  width: 100% !important;
-}
-
-.search-actions {
+.search-form-flex {
   display: flex;
-  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
   gap: 16px;
-  margin-top: 10px;
-  padding-top: 10px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.action-btn {
-  padding: 0 30px;
-  height: 40px;
+.search-form-flex .el-form-item {
+  margin-bottom: 0;
+  margin-right: 0;
+  display: flex;
+  align-items: center;
 }
 
+/* Apple 风格输入框 - 52px 高度, 12px 圆角 */
+.search-section :deep(.el-input__wrapper),
+.search-section :deep(.el-select__wrapper) {
+  height: 48px !important;
+  border-radius: 12px !important;
+  padding: 0 16px !important;
+  border: 1px solid #D2D2D7 !important;
+  box-shadow: none !important;
+  background: #FFFFFF !important;
+  transition: all 0.2s ease !important;
+}
+
+.search-section :deep(.el-input__wrapper:hover),
+.search-section :deep(.el-select__wrapper:hover) {
+  border-color: #86868B !important;
+}
+
+.search-section :deep(.el-input__wrapper.is-focus),
+.search-section :deep(.el-select__wrapper.is-focus) {
+  border-color: #007AFF !important;
+  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1) !important;
+}
+
+.search-section :deep(.el-input__inner) {
+  height: 46px !important;
+  line-height: 46px !important;
+  font-family: 'Inter', -apple-system, sans-serif !important;
+  font-size: 15px !important;
+  color: #1D1D1F !important;
+}
+
+.search-section :deep(.el-input__inner::placeholder) {
+  color: #86868B !important;
+}
+
+.search-section :deep(.el-form-item__label) {
+  color: #1D1D1F;
+  font-weight: 500;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* 控件宽度 - 统一宽度 */
+.compact-input {
+  width: 160px !important;
+}
+
+.compact-date {
+  width: 160px !important;
+}
+
+/* 日期选择器内部输入框缩小 */
+.search-section :deep(.el-date-editor) {
+  width: 160px !important;
+}
+
+.search-section :deep(.el-date-editor .el-range-input) {
+  width: 50px !important;
+  font-size: 13px !important;
+}
+
+.search-section :deep(.el-date-editor .el-range-separator) {
+  padding: 0 4px !important;
+  font-size: 12px !important;
+}
+
+.small-item .compact-input {
+  width: 160px !important;
+}
+
+.medium-item .compact-input {
+  width: 160px !important;
+}
+
+.search-actions-inline {
+  display: flex;
+  gap: 10px;
+  margin-left: auto;
+}
+
+/* Apple 蓝色按钮 */
+.search-actions-inline :deep(.el-button--primary) {
+  background: #007AFF !important;
+  border-color: #007AFF !important;
+  border-radius: 12px !important;
+  height: 48px !important;
+  font-weight: 600 !important;
+  font-family: 'Inter', -apple-system, sans-serif !important;
+  padding: 0 24px !important;
+}
+
+.search-actions-inline :deep(.el-button--primary:hover) {
+  background: #0066CC !important;
+  border-color: #0066CC !important;
+}
+
+.reset-btn {
+  background: #F5F5F7 !important;
+  border-color: #D2D2D7 !important;
+  border-radius: 12px !important;
+  height: 48px !important;
+  color: #1D1D1F !important;
+  font-family: 'Inter', -apple-system, sans-serif !important;
+}
+
+.reset-btn:hover {
+  color: #007AFF !important;
+  border-color: #007AFF !important;
+  background: rgba(0, 122, 255, 0.08) !important;
+}
+
+/* 隐藏不需要的元素 */
+.search-header, .header-title, .header-decoration, .search-section::after {
+  display: none;
+}
+
+/* 响应式 */
+@media (max-width: 1200px) {
+  .search-actions-inline {
+    margin-left: 0;
+  }
+}
+
+/* =====================================================
+   结果统计栏 - Bento 风格
+   ===================================================== */
 .results-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px;
-  background: rgba(26, 31, 58, 0.4);
-  border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  margin-bottom: 16px;
-  backdrop-filter: blur(5px);
+  background: #FFFFFF;
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .stats, .selected-info {
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: var(--text-secondary);
+  gap: 12px;
+  color: #86868B;
+  font-size: 14px;
+  font-family: 'Inter', -apple-system, sans-serif;
 }
 
 .stats strong, .selected-info strong {
-  color: var(--primary-color);
+  color: #007AFF;
   font-size: 18px;
+  font-weight: 600;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .loading-container {
@@ -497,119 +589,221 @@ const downloadAsset = (asset) => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  color: var(--primary-color);
+  gap: 20px;
+  color: #007AFF;
 }
 
+/* =====================================================
+   结果网格 - Bento 风格
+   ===================================================== */
 .results-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-auto-rows: 290px;
   gap: 20px;
+  padding-bottom: 20px;
+  animation: fadeIn 0.4s ease-out;
   flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+  padding-right: 4px;
 }
 
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  padding: 20px 0;
-}
-
-/* 列表视图容器 */
+/* 列表视图 */
 .results-list {
   flex: 1;
-  border-radius: 8px;
-  overflow: hidden;
+  min-height: 0;
+  border-radius: 16px;
+  overflow: auto;
+  background: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  animation: fadeIn 0.4s ease-out;
 }
 
-/* 表格深色主题适配 */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 表格适配 */
 :deep(.asset-table) {
-  --el-table-border-color: rgba(255, 255, 255, 0.05);
-  --el-table-header-bg-color: rgba(0, 0, 0, 0.3);
-  --el-table-bg-color: transparent;
-  --el-table-tr-bg-color: transparent;
-  --el-table-text-color: var(--text-regular);
-  --el-table-header-text-color: var(--text-secondary);
-  --el-table-row-hover-bg-color: rgba(0, 212, 255, 0.08);
-  background-color: transparent !important;
+  --el-table-border-color: #E8E8ED;
+  --el-table-header-bg-color: #F5F5F7;
+  --el-table-bg-color: #FFFFFF;
+  --el-table-tr-bg-color: #FFFFFF;
+  --el-table-text-color: #3C3C43;
+  --el-table-header-text-color: #1D1D1F;
+  --el-table-row-hover-bg-color: rgba(0, 122, 255, 0.04);
 }
 
 :deep(.el-table__inner-wrapper::before) {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: #E8E8ED;
 }
 
 :deep(.el-table td.el-table__cell),
 :deep(.el-table th.el-table__cell) {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
-  background-color: transparent !important;
+  border-bottom: 1px solid #E8E8ED !important;
 }
 
-:deep(.el-table__body-wrapper) {
-  background-color: transparent !important;
+:deep(.el-table th.el-table__cell) {
+  font-weight: 600;
+  font-family: 'Inter', -apple-system, sans-serif;
 }
 
-:deep(.el-table__header-wrapper) {
-  background-color: transparent !important;
-}
-
-/* 表格缩略图 */
 .table-thumbnail {
   width: 80px;
   height: 50px;
-  border-radius: 4px;
+  border-radius: 8px;
   object-fit: cover;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid #E8E8ED;
+  transition: all 0.2s ease;
 }
 
-/* 暂无分析样式 */
+.table-thumbnail:hover {
+  border-color: #007AFF;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.15);
+}
+
 .no-analysis {
-  color: #6b7280;
+  color: #AEAEB2;
   font-style: italic;
   font-size: 12px;
 }
 
-/* 分页组件深色主题适配 */
-:deep(.el-pagination) {
-  --el-pagination-bg-color: transparent;
-  --el-pagination-text-color: var(--text-secondary);
-  --el-pagination-button-bg-color: transparent;
-  --el-pagination-button-disabled-bg-color: transparent;
-  --el-pagination-hover-color: var(--primary-color);
+/* =====================================================
+   分页 - Apple 风格
+   ===================================================== */
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  padding: 16px 0;
+  flex-shrink: 0;
 }
 
-:deep(.el-pagination .el-select .el-input .el-input__wrapper) {
-  background-color: transparent !important;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+:deep(.el-pagination) {
+  --el-pagination-bg-color: transparent;
+  --el-pagination-text-color: #86868B;
+  --el-pagination-hover-color: #007AFF;
 }
 
 :deep(.el-pagination .el-pager li) {
-  background: transparent !important;
-  color: var(--text-secondary) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  margin: 0 2px;
+  background: #FFFFFF !important;
+  color: #86868B !important;
+  border: 1px solid #D2D2D7;
+  margin: 0 4px;
+  border-radius: 8px;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+:deep(.el-pagination .el-pager li:hover) {
+  color: #007AFF !important;
+  border-color: #007AFF;
 }
 
 :deep(.el-pagination .el-pager li.is-active) {
-  background: var(--primary-color) !important;
-  color: white !important;
-  border-color: var(--primary-color);
+  background: #007AFF !important;
+  color: #FFFFFF !important;
+  font-weight: 600;
+  border-color: #007AFF;
 }
 
 :deep(.el-pagination .btn-prev),
 :deep(.el-pagination .btn-next) {
-  background: transparent !important;
-  color: var(--text-secondary) !important;
+  background: #FFFFFF !important;
+  color: #86868B !important;
+  border: 1px solid #D2D2D7;
+  border-radius: 8px;
 }
 
-:deep(.el-pagination .el-pagination__jump) {
-  color: var(--text-secondary);
+:deep(.el-pagination .btn-prev:hover),
+:deep(.el-pagination .btn-next:hover) {
+  color: #007AFF !important;
+  border-color: #007AFF;
 }
 
-:deep(.el-pagination .el-pagination__jump .el-input .el-input__wrapper) {
-  background-color: transparent !important;
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1) inset !important;
+/* 列表视图表格优化 */
+.asset-table {
+  border-radius: 16px;
+  overflow: hidden;
 }
 
-:deep(.el-pagination .el-pagination__total) {
-  color: var(--text-secondary);
+.asset-table :deep(.el-table__header th) {
+  background: #FAFAFA;
+  font-weight: 600;
+  color: #86868B;
+  white-space: nowrap;
+}
+
+.asset-table :deep(.el-table__row td) {
+  vertical-align: middle;
+}
+
+.table-thumbnail {
+  width: 55px;
+  height: 40px;
+  border-radius: 6px;
+  object-fit: cover;
+  display: block;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.device-code {
+  font-family: 'SF Mono', 'Consolas', monospace;
+  font-size: 13px;
+  color: #555;
+  background: #F5F7FA;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.time-text {
+  font-size: 13px;
+  color: #86868B;
+  white-space: nowrap;
+  font-family: 'SF Mono', monospace;
+}
+
+/* 操作按钮 - Apple 风格图标 (最终修复版布局) */
+.action-btns {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.action-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  font-size: 18px;
+  color: #007AFF;
+  background: rgba(0, 122, 255, 0.08);
+  
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.action-icon .el-icon {
+  vertical-align: middle;
+}
+
+.action-icon:hover {
+  background: rgba(0, 122, 255, 0.15);
+  transform: scale(1.05);
+}
+
+.action-icon.download {
+  color: #34C759;
+  background: rgba(52, 199, 89, 0.08);
+}
+
+.action-icon.download:hover {
+  background: rgba(52, 199, 89, 0.15);
 }
 </style>

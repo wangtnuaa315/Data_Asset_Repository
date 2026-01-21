@@ -1,0 +1,81 @@
+# 应急业务字段映射配置
+# 修改此文件无需改动代码，重启脚本即可生效
+
+# 数据表配置
+tables:
+  # 智能设备告警表（薪火/深学/电信）
+  vp_ai_device_alarm:
+    description: "智能设备告警"
+    enabled: true
+    
+    # 核心字段映射（源表字段 -> 目标字段）
+    core_fields:
+      image_path: ALARM_IMG           # 图片路径字段
+      alarm_name: ALARM_NAME          # 告警名称（用于分类）
+      alarm_time: ALARM_TIME          # 告警时间（用于季度分类）
+      device_code: DEV_CODE           # 设备编码
+      analysis: analysis              # AI分析结果
+      alarm_type: ALARM_TYPE          # 告警类型编码
+      alarm_id: ID                    # 原始告警ID
+      area_code: AREA_CODE            # 区域编码
+      status: STATUS                  # 告警状态
+    
+    # 用于识别此表的特有字段
+    identifier_fields:
+      - img_original_name
+    
+    # 扩展字段（存入JSONB business_data）
+    extra_fields:
+      - DEV_NAME
+      - CHANNEL_CODE
+      - CHANNEL_NAME
+      - source
+      - LEVEL
+
+  # 海康设备告警表
+  vp_hk_alarm:
+    description: "海康设备告警"
+    enabled: true
+    
+    core_fields:
+      image_path: ALARM_IMG
+      alarm_name: ALARM_NAME
+      alarm_time: ALARM_TIME
+      device_code: DEV_CODE
+      analysis: analysis
+      alarm_type: ALARM_TYPE
+      alarm_id: ID
+      area_code: AREA_CODE
+      status: STATUS
+    
+    identifier_fields:
+      - img2
+      - same_img
+    
+    extra_fields:
+      - DEV_NAME
+      - CHANNEL_CODE
+      - CHANNEL_NAME
+      - source
+      - LEVEL
+      - analysis_result
+      - manual_review
+      - review_comments
+
+# 输出CSV字段配置
+output_fields:
+  # 核心字段（这些字段会写入独立列）
+  core:
+    - filename
+    - alarm_name
+    - alarm_time
+    - device_code
+    - analysis
+    - source_table
+    - alarm_type
+    - alarm_id
+    - area_code
+    - status
+  
+  # 扩展字段（合并为JSON存入business_data列）
+  extra_as_json: true

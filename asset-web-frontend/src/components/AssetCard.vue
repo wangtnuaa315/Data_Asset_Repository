@@ -84,48 +84,66 @@ const handleDownload = () => {
 </script>
 
 <style scoped>
+/* =====================================================
+   Bento Grids / Apple Style - Asset Card
+   ===================================================== */
+
 .asset-card {
   cursor: pointer;
   overflow: hidden;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  background: rgba(26, 31, 58, 0.3);
-  backdrop-filter: blur(5px);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 12px;
+  
+  /* Bento 风格纯白卡片 */
+  background: #FFFFFF;
+  border: none;
+  box-shadow: 
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    0 8px 16px rgba(0, 0, 0, 0.06);
+  
+  /* 24px 大圆角 */
+  border-radius: 20px;
+  
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
+/* 悬停效果 */
 .asset-card:hover {
-  transform: translateY(-5px) scale(1.02);
-  border-color: var(--primary-color);
-  box-shadow: 0 10px 30px -10px rgba(0, 212, 255, 0.3);
-  z-index: 10;
+  transform: translateY(-6px);
+  box-shadow: 
+    0 8px 16px rgba(0, 0, 0, 0.08),
+    0 16px 32px rgba(0, 0, 0, 0.12);
 }
 
+/* 选中状态 */
 .asset-card.selected {
-  border-color: var(--primary-color);
-  box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
-  background: rgba(0, 212, 255, 0.1);
+  border: 2px solid #007AFF;
+  box-shadow: 
+    0 0 0 4px rgba(0, 122, 255, 0.15),
+    0 8px 16px rgba(0, 0, 0, 0.08);
 }
 
 .card-image {
   position: relative;
   width: 100%;
-  height: 180px;
+  height: 160px;
+  flex-shrink: 0;
   overflow: hidden;
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 8px 8px 0 0;
+  background: #F5F5F7;
+  border-radius: 20px 20px 0 0;
 }
 
 .card-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform 0.4s ease;
 }
 
 .asset-card:hover .card-image img {
-  transform: scale(1.15);
+  transform: scale(1.05);
 }
 
 .image-overlay {
@@ -134,74 +152,115 @@ const handleDownload = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(13, 17, 34, 0.7);
+  background: rgba(0, 0, 0, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 12px;
   opacity: 0;
-  transition: opacity 0.3s ease;
-  backdrop-filter: blur(2px);
+  transition: all 0.25s ease;
+  z-index: 5;
 }
 
 .asset-card:hover .image-overlay {
   opacity: 1;
 }
 
-.card-checkbox {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  z-index: 10;
-  transform: scale(1.1);
+/* 悬停按钮 - Apple 风格 */
+.image-overlay :deep(.el-button) {
+  background: #FFFFFF !important;
+  border: none !important;
+  color: #1D1D1F !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
+.image-overlay :deep(.el-button:hover) {
+  background: #007AFF !important;
+  color: #FFFFFF !important;
+}
+
+/* Checkbox 样式 */
 :deep(.el-checkbox__inner) {
-  background-color: rgba(26, 31, 58, 0.9);
-  border-color: rgba(255, 255, 255, 0.3);
+  background-color: #FFFFFF;
+  border-color: #D2D2D7;
+  border-radius: 6px;
+  width: 20px;
+  height: 20px;
 }
 
 :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
-  background-color: var(--primary-color);
-  border-color: var(--primary-color);
-  box-shadow: 0 0 10px var(--primary-color);
+  background-color: #007AFF;
+  border-color: #007AFF;
 }
 
+:deep(.el-checkbox__inner::after) {
+  left: 8px;
+  top: 5px;
+  width: 4px;
+  height: 8px;
+  border-width: 1px;
+}
+
+.card-checkbox {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 10;
+}
+
+/* 卡片内容区 */
 .card-content {
   padding: 16px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .card-title {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
-  color: var(--text-primary);
+  font-family: 'Inter', -apple-system, sans-serif;
+  color: #1D1D1F;
   margin-bottom: 10px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  letter-spacing: 0.5px;
 }
 
 .card-meta {
-  margin-bottom: 12px;
+  margin-bottom: auto;
+}
+
+/* Tag 样式 */
+.card-meta :deep(.el-tag) {
+  background: rgba(0, 122, 255, 0.1);
+  color: #007AFF;
+  border: none;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
 }
 
 .card-info {
+  margin-top: 12px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;
+  border-top: 1px solid #E8E8ED;
+  padding-top: 10px;
 }
 
 .info-item {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--text-secondary);
+  gap: 6px;
+  font-size: 12px;
+  font-family: 'Inter', -apple-system, sans-serif;
+  color: #86868B;
 }
 
 .info-item .el-icon {
-  color: var(--primary-color);
-  filter: drop-shadow(0 0 2px var(--primary-color));
+  color: #AEAEB2;
 }
 </style>

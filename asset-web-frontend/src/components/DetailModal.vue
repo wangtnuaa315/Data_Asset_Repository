@@ -43,17 +43,7 @@
           #{{ asset.asset_id }}
         </el-descriptions-item>
 
-        <el-descriptions-item label="AI分析" :span="2">
-          <el-tag 
-            v-if="asset.analysis && asset.analysis.trim()" 
-            type="success" 
-            effect="dark"
-            size="default"
-          >
-            {{ asset.analysis }}
-          </el-tag>
-          <span v-else class="no-analysis">暂无分析数据</span>
-        </el-descriptions-item>
+
 
         <el-descriptions-item label="文件路径" :span="2">
           <el-input 

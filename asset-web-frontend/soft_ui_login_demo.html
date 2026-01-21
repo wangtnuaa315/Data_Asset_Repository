@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数据资产检索系统 - 登录 (Soft UI Evolution 风格)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* =====================================================
+       Soft UI Evolution
+       进化版柔和 UI - 比 Neumorphism 更实用
+       柔和蓝色系 + 改进的阴影对比度
+       ===================================================== */
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            /* 柔和蓝灰渐变背景 */
+            background: linear-gradient(135deg, #E8F4FD 0%, #F0F4F8 50%, #EEF2F7 100%);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .login-card {
+            width: 400px;
+            padding: 44px;
+            /* 柔和白色背景 */
+            background: #FFFFFF;
+            /* 中等圆角 */
+            border-radius: 20px;
+            /* Soft UI 特色 - 外凸阴影 */
+            box-shadow:
+                8px 8px 24px rgba(163, 177, 198, 0.35),
+                -8px -8px 24px rgba(255, 255, 255, 0.9);
+            /* 微妙的内边框 */
+            border: 1px solid rgba(255, 255, 255, 0.8);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .logo-icon {
+            width: 60px;
+            height: 60px;
+            /* 柔和渐变 */
+            background: linear-gradient(135deg, #6B8DD6 0%, #8E37D7 100%);
+            border-radius: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            /* Soft UI 阴影 */
+            box-shadow:
+                4px 4px 12px rgba(107, 141, 214, 0.4),
+                -2px -2px 8px rgba(255, 255, 255, 0.8);
+        }
+
+        .logo-icon svg {
+            width: 28px;
+            height: 28px;
+            fill: white;
+        }
+
+        .login-header h1 {
+            color: #2D3748;
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .login-header p {
+            color: #718096;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .login-form {
+            margin-bottom: 28px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            color: #4A5568;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .form-input {
+            width: 100%;
+            height: 50px;
+            padding: 0 18px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: inherit;
+            color: #2D3748;
+            /* Soft UI 内凹效果 */
+            background: #F7FAFC;
+            box-shadow:
+                inset 4px 4px 8px rgba(163, 177, 198, 0.25),
+                inset -4px -4px 8px rgba(255, 255, 255, 0.9);
+            transition: all 0.25s ease;
+            outline: none;
+        }
+
+        .form-input::placeholder {
+            color: #A0AEC0;
+        }
+
+        .form-input:focus {
+            background: #FFFFFF;
+            box-shadow:
+                inset 2px 2px 4px rgba(163, 177, 198, 0.2),
+                inset -2px -2px 4px rgba(255, 255, 255, 0.9),
+                0 0 0 3px rgba(107, 141, 214, 0.15);
+        }
+
+        .login-btn {
+            width: 100%;
+            height: 52px;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            /* 渐变按钮 */
+            background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
+            color: white;
+            /* Soft UI 按钮阴影 */
+            box-shadow:
+                4px 4px 12px rgba(102, 126, 234, 0.4),
+                -2px -2px 8px rgba(255, 255, 255, 0.6);
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                6px 6px 16px rgba(102, 126, 234, 0.5),
+                -3px -3px 10px rgba(255, 255, 255, 0.7);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+            box-shadow:
+                2px 2px 8px rgba(102, 126, 234, 0.3),
+                -1px -1px 4px rgba(255, 255, 255, 0.5);
+        }
+
+        .login-footer {
+            text-align: center;
+            padding-top: 20px;
+        }
+
+        .hint {
+            color: #718096;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            /* Soft UI 提示框 */
+            background: #F7FAFC;
+            padding: 12px 16px;
+            border-radius: 10px;
+            box-shadow:
+                inset 2px 2px 4px rgba(163, 177, 198, 0.15),
+                inset -2px -2px 4px rgba(255, 255, 255, 0.8);
+        }
+
+        .hint-icon {
+            width: 16px;
+            height: 16px;
+            fill: #718096;
+        }
+
+        .hint strong {
+            color: #667EEA;
+            font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="login-card">
+        <div class="login-header">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
+                </svg>
+            </div>
+            <h1>数据资产检索系统</h1>
+            <p>请登录以继续</p>
+        </div>
+
+        <form class="login-form" onsubmit="return false;">
+            <div class="form-group">
+                <label class="form-label">用户名</label>
+                <input type="text" class="form-input" placeholder="请输入用户名" value="admin">
+            </div>
+            <div class="form-group">
+                <label class="form-label">密码</label>
+                <input type="password" class="form-input" placeholder="请输入密码" value="••••••">
+            </div>
+            <button type="submit" class="login-btn">登录</button>
+        </form>
+
+        <div class="login-footer">
+            <div class="hint">
+                <svg class="hint-icon" viewBox="0 0 24 24">
+                    <path
+                        d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z" />
+                </svg>
+                <span>普通用户: <strong>user</strong> / <strong>user123</strong></span>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

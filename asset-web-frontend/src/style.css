@@ -1,25 +1,61 @@
-/* 科技感深色主题样式 - 调亮版 */
+/* =====================================================
+   Bento Grids / Apple Style Theme
+   米白背景 + 圆角卡片 + 柔和阴影
+   ===================================================== */
+
+/* Google Fonts - Inter (Apple 风格) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 :root {
-  /* 主色调 - 科技蓝 */
-  --primary-color: #00d4ff;
-  --secondary-color: #6366f1;
-  --accent-color: #f43f5e;
+  /* 字体 - Apple 风格 */
+  --font-heading: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  /* 背景色 - 深蓝灰色系（调亮） */
-  --bg-primary: #1a1f36;
-  --bg-secondary: #242b45;
-  --bg-card: rgba(45, 55, 90, 0.7);
-  --bg-hover: rgba(60, 70, 110, 0.8);
+  /* Apple 蓝色主色 */
+  --primary-color: #007AFF;
+  --primary-light: #5AC8FA;
+  --primary-hover: #0066CC;
+  --primary-dim: rgba(0, 122, 255, 0.1);
+  --primary-glow: rgba(0, 122, 255, 0.25);
+  --gradient-primary: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
 
-  /* 文字颜色 */
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-regular: #e2e8f0;
+  /* 辅助色 */
+  --secondary-color: #86868B;
+  --accent-color: #FF9500;
+  --success-color: #34C759;
+  --danger-color: #FF3B30;
 
-  /* 边框 */
-  --border-color: rgba(100, 116, 139, 0.4);
-  --border-glow: rgba(0, 212, 255, 0.5);
+  /* 背景色 - Bento 风格 */
+  --bg-primary: #F5F5F7;
+  --bg-secondary: #FFFFFF;
+  --bg-card: #FFFFFF;
+  --bg-hover: rgba(0, 122, 255, 0.05);
+
+  /* 文字颜色 - Apple 风格 */
+  --text-primary: #1D1D1F;
+  --text-secondary: #86868B;
+  --text-muted: #AEAEB2;
+  --text-regular: #3C3C43;
+
+  /* 边框与阴影 - Bento 风格 */
+  --border-color: #D2D2D7;
+  --border-light: #E8E8ED;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
+  --shadow-md: 
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 10px 20px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 
+    0 4px 6px rgba(0, 0, 0, 0.05),
+    0 10px 20px rgba(0, 0, 0, 0.08),
+    0 20px 40px rgba(0, 0, 0, 0.1);
+  --shadow-hover: 
+    0 8px 16px rgba(0, 0, 0, 0.08),
+    0 16px 32px rgba(0, 0, 0, 0.12);
+  
+  /* 圆角 - 大圆角 */
+  --radius: 24px;
+  --radius-sm: 12px;
+  --radius-xs: 8px;
 }
 
 * {
@@ -32,23 +68,98 @@ html,
 body,
 #app {
   height: 100%;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--bg-primary);
+  overflow-x: hidden;
 }
+
+/* =====================================================
+   统一背景风格 - Bento + AI 科技背景
+   ===================================================== */
 
 body {
-  background: linear-gradient(135deg, #1e2746 0%, #1a1f36 50%, #242b45 100%);
+  /* Apple 风格米白背景 + 渐变光球 */
+  background: #F5F5F7;
+  background-image:
+    /* 左上角 - 蓝色光晕 */
+    radial-gradient(600px circle at 10% 20%,
+      rgba(0, 122, 255, 0.12) 0%,
+      transparent 50%),
+    /* 右下角 - 紫色光晕 */
+    radial-gradient(500px circle at 90% 80%,
+      rgba(88, 86, 214, 0.1) 0%,
+      transparent 50%),
+    /* 中间 - 淡粉色光晕 */
+    radial-gradient(400px circle at 50% 50%,
+      rgba(255, 45, 85, 0.05) 0%,
+      transparent 50%);
   color: var(--text-primary);
+  position: relative;
+  min-height: 100vh;
 }
 
-/* 玻璃拟态卡片 */
+/* AI 科技背景图 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url('/ai_bg.png');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  pointer-events: none;
+  opacity: 0.5;
+  z-index: 0;
+}
+
+/* =====================================================
+   Bento 风格卡片
+   ===================================================== */
+
+.bento-card,
+.glass-card {
+  background: #FFFFFF;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
+}
+
+.bento-card:hover,
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* 兼容旧的 glass-effect 类 */
 .glass-effect {
-  background: var(--bg-card);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  background: #FFFFFF;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-effect:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+}
+
+/* =====================================================
+   Glow Hover 效果
+   ===================================================== */
+.glow-hover {
+  transition: box-shadow 0.3s ease, transform 0.2s ease;
+}
+
+.glow-hover:hover {
+  box-shadow: 0 0 20px var(--primary-glow);
+  transform: translateY(-2px);
 }
 
 /* Element Plus 深色主题覆盖和增强 */
@@ -56,7 +167,7 @@ body {
   background-color: transparent;
   border: none;
   color: var(--text-primary);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .el-card.is-always-shadow {
@@ -64,57 +175,67 @@ body {
 }
 
 /* 输入框科技感增强 */
+/* 输入框增强 */
 .el-input__wrapper,
 .el-select__wrapper {
-  background-color: rgba(10, 14, 39, 0.6) !important;
-  border: 1px solid var(--border-color) !important;
+  background-color: #fff !important;
+  border: 1px solid #dcdfe6 !important;
   box-shadow: none !important;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s ease;
 }
 
 .el-input__wrapper:hover,
 .el-select__wrapper:hover {
-  border-color: rgba(0, 242, 255, 0.5) !important;
-  background-color: rgba(10, 14, 39, 0.8) !important;
+  border-color: var(--primary-color) !important;
 }
 
 .el-input__wrapper.is-focus,
 .el-select__wrapper.is-focused {
   border-color: var(--primary-color) !important;
-  box-shadow: 0 0 15px var(--border-glow) !important;
-  background-color: rgba(10, 14, 39, 0.9) !important;
+  box-shadow: 0 0 0 2px var(--primary-dim) !important;
+  background-color: #fff !important;
 }
 
 .el-input__inner {
   color: var(--text-primary) !important;
-  font-weight: 500;
+  font-family: 'JetBrains Mono', monospace;
+  /* 代码风格字体 */
 }
 
-/* 按钮增强 */
+/* =====================================================
+   Electric Blue 渐变按钮
+   ===================================================== */
 .el-button--primary {
-  background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
+  background: var(--gradient-primary);
   border: none;
   font-weight: 600;
-  letter-spacing: 0.5px;
-  transition: all 0.3s ease;
+  letter-spacing: 0.3px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 .el-button--primary:hover {
-  background: linear-gradient(135deg, #00d4ff 0%, #0088ff 100%);
+  background: var(--gradient-primary);
+  filter: brightness(1.1);
   transform: translateY(-1px);
-  box-shadow: 0 0 20px rgba(0, 198, 255, 0.4);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, 0.4);
 }
 
 .el-button--default {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid var(--border-color);
+  background: #fff;
+  border: 1px solid #dcdfe6;
   color: var(--text-primary);
+  transition: all 0.2s ease;
 }
 
 .el-button--default:hover {
-  background: rgba(255, 255, 255, 0.1);
-  border-color: var(--text-secondary);
-  color: #fff;
+  background: #f8f9fa;
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+  box-shadow: none;
 }
 
 /* 标签页和菜单增强 */
@@ -123,40 +244,140 @@ body {
   background: transparent !important;
 }
 
-/* 定制滚动条 */
+/* 定制发光滚动条 */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #f1f1f1;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
+  background: #c1c1c1;
   border-radius: 3px;
+  border: 1px solid transparent;
+  background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 242, 255, 0.3);
+  background: var(--primary-color);
+  box-shadow: 0 0 10px var(--primary-color);
 }
 
 /* 全局动画 */
+/* 全局动画 */
 .glow-text {
-  text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
+  /* text-shadow: none;  移除发光 */
+  color: var(--primary-color);
 }
 
-@keyframes float {
-  0% {
-    transform: translateY(0px);
+/* 列表入场动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
 
-  50% {
-    transform: translateY(-5px);
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
+}
 
-  100% {
-    transform: translateY(0px);
-  }
+.slide-enter-active {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+/* =====================================================
+   图片预览组件 (el-image-viewer) - 修复透视问题
+   ===================================================== */
+
+/* 强制隔离层 - 覆盖所有内容 */
+.el-image-viewer__wrapper {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+  /* 添加自己的背景，不依赖mask */
+  background-color: rgba(0, 0, 0, 0.92) !important;
+}
+
+/* 遮罩层 */
+.el-image-viewer__mask {
+  background: rgba(0, 0, 0, 0.95) !important;
+  opacity: 1 !important;
+  z-index: 99998 !important;
+}
+
+/* 图片容器 - 居中显示 */
+.el-image-viewer__canvas {
+  z-index: 99999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+/* 图片本身 - 限制最大尺寸，不要太大 */
+.el-image-viewer__img {
+  max-width: 80vw !important;
+  max-height: 80vh !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain !important;
+}
+
+/* 操作按钮 */
+.el-image-viewer__btn {
+  background-color: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: #fff !important;
+  z-index: 100000 !important;
+}
+
+.el-image-viewer__btn:hover {
+  background-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.el-image-viewer__actions {
+  z-index: 100000 !important;
+  background-color: rgba(0, 0, 0, 0.6) !important;
+  border-radius: 24px !important;
+}
+
+.el-image-viewer__close {
+  z-index: 100000 !important;
+}
+
+/* 确保表格固定列层级最低 */
+.el-table__fixed,
+.el-table__fixed-right,
+.el-table__fixed-right-patch {
+  z-index: 1 !important;
+}
+
+/* 确保表格本身层级低 */
+.el-table {
+  position: relative;
+  z-index: 1;
+}
+
+/* =====================================================
+   对话框层级修复 - 确保在导航栏之上
+   ===================================================== */
+.el-overlay {
+  z-index: 2000 !important;
+}
+
+.el-dialog {
+  z-index: 2001 !important;
+}
+
+.el-dialog__wrapper {
+  z-index: 2000 !important;
 }

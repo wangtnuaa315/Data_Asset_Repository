@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>法院卷宗检索 - Apple Style Demo</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: linear-gradient(180deg, #E8F4FD 0%, #F5F5F7 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* =====================================================
+           搜索区域 - Bento 白色卡片 (复制自 Emergency.vue)
+           ===================================================== */
+        .search-section {
+            padding: 24px 32px;
+            background: #FFFFFF;
+            border-radius: 24px;
+            box-shadow:
+                0 4px 6px rgba(0, 0, 0, 0.05),
+                0 10px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .search-form-flex {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .search-form-flex .el-form-item {
+            margin-bottom: 0;
+            margin-right: 0;
+        }
+
+        /* Apple 风格输入框 - 48px 高度, 12px 圆角 */
+        .search-section :deep(.el-input__wrapper),
+        .search-section :deep(.el-select__wrapper) {
+            height: 48px !important;
+            border-radius: 12px !important;
+            padding: 0 16px !important;
+            border: 1px solid #D2D2D7 !important;
+            box-shadow: none !important;
+            background: #FFFFFF !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .search-section :deep(.el-input__wrapper:hover),
+        .search-section :deep(.el-select__wrapper:hover) {
+            border-color: #86868B !important;
+        }
+
+        .search-section :deep(.el-input__wrapper.is-focus),
+        .search-section :deep(.el-select__wrapper.is-focus) {
+            border-color: #007AFF !important;
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1) !important;
+        }
+
+        .search-section :deep(.el-input__inner) {
+            font-family: 'Inter', -apple-system, sans-serif !important;
+            font-size: 15px !important;
+            color: #1D1D1F !important;
+        }
+
+        .search-section :deep(.el-form-item__label) {
+            color: #1D1D1F;
+            font-weight: 500;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+
+        .compact-input {
+            width: 160px !important;
+        }
+
+        .search-actions-inline {
+            display: flex;
+            gap: 10px;
+            margin-left: auto;
+        }
+
+        /* Apple 蓝色按钮 */
+        .btn-primary {
+            background: #007AFF !important;
+            border-color: #007AFF !important;
+            border-radius: 12px !important;
+            height: 48px !important;
+            font-weight: 600 !important;
+            font-family: 'Inter', -apple-system, sans-serif !important;
+            padding: 0 24px !important;
+        }
+
+        .btn-primary:hover {
+            background: #0066CC !important;
+            border-color: #0066CC !important;
+        }
+
+        .reset-btn {
+            background: #F5F5F7 !important;
+            border-color: #D2D2D7 !important;
+            border-radius: 12px !important;
+            height: 48px !important;
+            color: #1D1D1F !important;
+        }
+
+        .reset-btn:hover {
+            color: #007AFF !important;
+            border-color: #007AFF !important;
+            background: rgba(0, 122, 255, 0.08) !important;
+        }
+
+        /* =====================================================
+           结果区域 - Bento 白色卡片
+           ===================================================== */
+        .result-section {
+            background: #FFFFFF;
+            border-radius: 24px;
+            padding: 24px 32px;
+            box-shadow:
+                0 4px 6px rgba(0, 0, 0, 0.05),
+                0 10px 20px rgba(0, 0, 0, 0.08);
+            flex: 1;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .stats {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #86868B;
+            font-size: 15px;
+        }
+
+        .stats strong {
+            color: #007AFF;
+            font-weight: 600;
+        }
+
+        /* 表格样式 - Apple 风格 */
+        .case-table {
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #F2F2F5;
+        }
+
+        .case-table :deep(th.el-table__cell) {
+            background: #F8F8FA !important;
+            color: #1D1D1F;
+            font-weight: 600;
+            border-bottom: 1px solid #E5E5E5;
+            height: 52px;
+            font-family: 'Inter', -apple-system, sans-serif;
+        }
+
+        .case-table :deep(td.el-table__cell) {
+            padding: 14px 0;
+        }
+
+        .case-table :deep(.el-table__row:hover > td) {
+            background: rgba(0, 122, 255, 0.05) !important;
+        }
+
+        /* 案号 - 等宽字体 Apple 蓝色 */
+        .case-number {
+            font-family: 'SF Mono', 'Consolas', monospace;
+            font-size: 13px;
+            color: #007AFF;
+            font-weight: 500;
+        }
+
+        /* 审判阶段标签 */
+        .trial-stage {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .trial-stage.first {
+            background: rgba(0, 122, 255, 0.1);
+            color: #007AFF;
+        }
+
+        .trial-stage.second {
+            background: rgba(255, 149, 0, 0.1);
+            color: #FF9500;
+        }
+
+        /* 卷宗统计标签 */
+        .dossier-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .dossier-tag {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(52, 199, 89, 0.1);
+            color: #34C759;
+            font-weight: 500;
+        }
+
+        .dossier-tag.missing {
+            background: rgba(255, 59, 48, 0.1);
+            color: #FF3B30;
+            text-decoration: line-through;
+        }
+
+        /* 操作按钮 - Apple 风格 */
+        .action-btns {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 12px;
+        }
+
+        .action-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #007AFF;
+            background: rgba(0, 122, 255, 0.08);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-icon:hover {
+            background: rgba(0, 122, 255, 0.15);
+            transform: scale(1.05);
+        }
+
+        .action-icon.download {
+            color: #34C759;
+            background: rgba(52, 199, 89, 0.08);
+        }
+
+        .action-icon.download:hover {
+            background: rgba(52, 199, 89, 0.15);
+        }
+
+        /* 分页 */
+        .pagination-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 24px;
+        }
+
+        /* =====================================================
+           弹窗样式 - Apple 风格
+           ===================================================== */
+        .el-dialog {
+            border-radius: 20px !important;
+        }
+
+        .case-detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #F2F2F5;
+        }
+
+        .case-detail-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1D1D1F;
+            margin-bottom: 8px;
+        }
+
+        .case-detail-ah {
+            font-family: 'SF Mono', monospace;
+            font-size: 14px;
+            color: #007AFF;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 28px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #86868B;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 15px;
+            color: #1D1D1F;
+            font-weight: 500;
+        }
+
+        .section-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #1D1D1F;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: #007AFF;
+            border-radius: 2px;
+        }
+
+        /* 卷宗树 - Apple 风格 */
+        .dossier-tree {
+            background: #F8F8FA;
+            border-radius: 16px;
+            padding: 16px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+
+        .tree-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 14px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .tree-item:hover {
+            background: rgba(0, 122, 255, 0.08);
+        }
+
+        .tree-icon {
+            margin-right: 12px;
+            font-size: 20px;
+        }
+
+        .tree-icon.folder {
+            color: #FF9500;
+        }
+
+        .tree-icon.file {
+            color: #007AFF;
+        }
+
+        .tree-name {
+            flex: 1;
+            font-size: 14px;
+            color: #1D1D1F;
+            font-weight: 500;
+        }
+
+        .tree-category {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            background: rgba(0, 122, 255, 0.1);
+            color: #007AFF;
+            font-weight: 500;
+        }
+
+        .tree-children {
+            margin-left: 32px;
+        }
+
+        /* 关联案件 */
+        .related-case {
+            display: flex;
+            align-items: center;
+            padding: 14px 18px;
+            background: rgba(0, 122, 255, 0.05);
+            border: 1px solid rgba(0, 122, 255, 0.1);
+            border-radius: 12px;
+            margin-top: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .related-case:hover {
+            background: rgba(0, 122, 255, 0.1);
+            border-color: rgba(0, 122, 255, 0.2);
+        }
+
+        .related-case-icon {
+            margin-right: 14px;
+            font-size: 22px;
+        }
+
+        .related-case-info {
+            flex: 1;
+        }
+
+        .related-case-label {
+            font-size: 12px;
+            color: #86868B;
+            font-weight: 500;
+        }
+
+        .related-case-ah {
+            font-size: 14px;
+            color: #007AFF;
+            font-family: 'SF Mono', monospace;
+            font-weight: 500;
+        }
+
+        /* 视图切换按钮 */
+        .view-toggle .el-button {
+            border-radius: 10px !important;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app">
+        <div class="app-container">
+            <!-- 搜索区域 - Bento 卡片 -->
+            <div class="search-section">
+                <el-form :inline="true" class="search-form-flex">
+                    <el-form-item label="案号">
+                        <el-input v-model="searchForm.ah" placeholder="输入案号" class="compact-input" clearable />
+                    </el-form-item>
+
+                    <el-form-item label="案由">
+                        <el-select v-model="searchForm.ay" placeholder="选择案由" class="compact-input" clearable>
+                            <el-option label="买卖合同纠纷" value="买卖合同纠纷" />
+                            <el-option label="民间借贷纠纷" value="民间借贷纠纷" />
+                            <el-option label="租赁合同纠纷" value="租赁合同纠纷" />
+                            <el-option label="故意伤害罪" value="故意伤害罪" />
+                        </el-select>
+                    </el-form-item>
+
+                    <el-form-item label="案件类型">
+                        <el-select v-model="searchForm.ajlx" placeholder="全部" class="compact-input"
+                            style="width: 120px;" clearable>
+                            <el-option label="民事" value="民事" />
+                            <el-option label="刑事" value="刑事" />
+                            <el-option label="行政" value="行政" />
+                        </el-select>
+                    </el-form-item>
+
+                    <el-form-item label="审判阶段">
+                        <el-select v-model="searchForm.trial_stage" placeholder="全部" class="compact-input"
+                            style="width: 100px;" clearable>
+                            <el-option label="一审" :value="1" />
+                            <el-option label="二审" :value="2" />
+                        </el-select>
+                    </el-form-item>
+
+                    <el-form-item label="承办人">
+                        <el-input v-model="searchForm.cbr" placeholder="法官姓名" class="compact-input"
+                            style="width: 120px;" clearable />
+                    </el-form-item>
+
+                    <div class="search-actions-inline">
+                        <el-button type="primary" class="btn-primary" @click="handleSearch">
+                            <el-icon style="margin-right: 6px;"><search-icon /></el-icon>
+                            检索
+                        </el-button>
+                        <el-button class="reset-btn" @click="handleReset">
+                            <el-icon style="margin-right: 6px;"><refresh-icon /></el-icon>
+                            重置
+                        </el-button>
+                    </div>
+                </el-form>
+            </div>
+
+            <!-- 结果区域 - Bento 卡片 -->
+            <div class="result-section">
+                <div class="results-header">
+                    <div class="stats">
+                        <el-icon><document-icon /></el-icon>
+                        <span>找到 <strong>{{ caseList.length }}</strong> 个案件</span>
+                    </div>
+                    <el-button-group class="view-toggle">
+                        <el-button :type="viewMode === 'grid' ? 'primary' : ''" @click="viewMode = 'grid'">
+                            <el-icon><grid-icon /></el-icon>
+                        </el-button>
+                        <el-button :type="viewMode === 'list' ? 'primary' : ''" @click="viewMode = 'list'">
+                            <el-icon><list-icon /></el-icon>
+                        </el-button>
+                    </el-button-group>
+                </div>
+
+                <!-- 表格 -->
+                <el-table :data="caseList" class="case-table" style="width: 100%">
+                    <el-table-column type="selection" width="45" />
+
+                    <el-table-column label="案号" min-width="200">
+                        <template #default="{ row }">
+                            <span class="case-number">{{ row.ah }}</span>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column label="案件名称" min-width="200" show-overflow-tooltip>
+                        <template #default="{ row }">
+                            {{ row.aj_mc }}
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column label="案由" width="140">
+                        <template #default="{ row }">
+                            <el-tag :type="row.ajlx === '刑事' ? 'danger' : 'warning'" effect="plain" size="small">
+                                {{ row.ay_ms }}
+                            </el-tag>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column label="审判阶段" width="90">
+                        <template #default="{ row }">
+                            <span :class="['trial-stage', row.trial_stage === 1 ? 'first' : 'second']">
+                                {{ row.trial_stage === 1 ? '一审' : '二审' }}
+                            </span>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column label="卷宗统计" width="180">
+                        <template #default="{ row }">
+                            <div class="dossier-tags">
+                                <span :class="['dossier-tag', row.has_起诉状 ? '' : 'missing']">起诉状</span>
+                                <span :class="['dossier-tag', row.has_答辩状 ? '' : 'missing']">答辩状</span>
+                                <span :class="['dossier-tag', row.has_判决书 ? '' : 'missing']">判决书</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column label="承办人" width="90">
+                        <template #default="{ row }">
+                            {{ row.cbr_mc }}
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column label="立案日期" width="110">
+                        <template #default="{ row }">
+                            <span style="font-size: 13px; color: #86868B;">{{ row.larq }}</span>
+                        </template>
+                    </el-table-column>
+
+                    <el-table-column label="操作" width="100" fixed="right">
+                        <template #default="{ row }">
+                            <div class="action-btns">
+                                <el-tooltip content="查看详情" placement="top">
+                                    <div class="action-icon" @click="showCaseDetail(row)">
+                                        <el-icon><view-icon /></el-icon>
+                                    </div>
+                                </el-tooltip>
+                                <el-tooltip content="下载" placement="top">
+                                    <div class="action-icon download">
+                                        <el-icon><download-icon /></el-icon>
+                                    </div>
+                                </el-tooltip>
+                            </div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+
+                <div class="pagination-wrapper">
+                    <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize"
+                        :page-sizes="[20, 50, 100]" layout="total, sizes, prev, pager, next" :total="156" />
+                </div>
+            </div>
+        </div>
+
+        <!-- 案件详情弹窗 -->
+        <el-dialog v-model="detailVisible" title="" width="780px">
+            <div v-if="currentCase">
+                <div class="case-detail-header">
+                    <div>
+                        <div class="case-detail-title">{{ currentCase.aj_mc }}</div>
+                        <div class="case-detail-ah">{{ currentCase.ah }}</div>
+                    </div>
+                    <el-tag :type="currentCase.ajlx === '民事' ? 'warning' : 'danger'" size="large" effect="plain">
+                        {{ currentCase.ajlx }}
+                    </el-tag>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">法院</span>
+                        <span class="info-value">{{ currentCase.fymc }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">案由</span>
+                        <span class="info-value">{{ currentCase.ay_ms }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">承办人</span>
+                        <span class="info-value">{{ currentCase.cbr_mc }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">立案日期</span>
+                        <span class="info-value">{{ currentCase.larq }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">审判阶段</span>
+                        <span class="info-value">{{ currentCase.trial_stage === 1 ? '一审' : '二审' }}</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">标的金额</span>
+                        <span class="info-value">¥ {{ currentCase.bdje?.toLocaleString() || '-' }}</span>
+                    </div>
+                </div>
+
+                <!-- 关联案件 -->
+                <div v-if="currentCase.first_instance_ah" style="margin-bottom: 28px;">
+                    <div class="section-title">关联案件</div>
+                    <div class="related-case">
+                        <span class="related-case-icon">🔗</span>
+                        <div class="related-case-info">
+                            <div class="related-case-label">一审案件</div>
+                            <div class="related-case-ah">{{ currentCase.first_instance_ah }}</div>
+                        </div>
+                        <el-button type="primary" link>跳转查看 →</el-button>
+                    </div>
+                </div>
+
+                <!-- 卷宗目录 -->
+                <div class="section-title">卷宗目录</div>
+                <div class="dossier-tree">
+                    <div class="tree-item">
+                        <span class="tree-icon folder">📁</span>
+                        <span class="tree-name">诉讼材料</span>
+                    </div>
+                    <div class="tree-children">
+                        <div class="tree-item" v-if="currentCase.has_起诉状">
+                            <span class="tree-icon file">📄</span>
+                            <span class="tree-name">起诉状.pdf</span>
+                            <span class="tree-category">起诉状</span>
+                        </div>
+                        <div class="tree-item" v-if="currentCase.has_答辩状">
+                            <span class="tree-icon file">📄</span>
+                            <span class="tree-name">答辩状.pdf</span>
+                            <span class="tree-category">答辩状</span>
+                        </div>
+                        <div class="tree-item">
+                            <span class="tree-icon file">📄</span>
+                            <span class="tree-name">证据清单.pdf</span>
+                            <span class="tree-category">证据</span>
+                        </div>
+                    </div>
+
+                    <div class="tree-item" style="margin-top: 8px;">
+                        <span class="tree-icon folder">📁</span>
+                        <span class="tree-name">庭审材料</span>
+                    </div>
+                    <div class="tree-children">
+                        <div class="tree-item">
+                            <span class="tree-icon file">📄</span>
+                            <span class="tree-name">庭审笔录_20240315.pdf</span>
+                            <span class="tree-category">庭审笔录</span>
+                        </div>
+                        <div class="tree-item" v-if="currentCase.has_判决书">
+                            <span class="tree-icon file">📄</span>
+                            <span class="tree-name">民事判决书.pdf</span>
+                            <span class="tree-category">判决书</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <template #footer>
+                <el-button @click="detailVisible = false" class="reset-btn">关闭</el-button>
+                <el-button type="primary" class="btn-primary">
+                    <el-icon style="margin-right: 6px;"><download-icon /></el-icon>
+                    下载全部卷宗
+                </el-button>
+            </template>
+        </el-dialog>
+    </div>
+
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/element-plus"></script>
+    <script src="https://unpkg.com/@element-plus/icons-vue"></script>
+
+    <script>
+        const { createApp, ref, reactive } = Vue;
+        const Icons = ElementPlusIconsVue;
+
+        const app = createApp({
+            setup() {
+                const searchForm = reactive({
+                    ah: '',
+                    ay: '',
+                    ajlx: '',
+                    trial_stage: null,
+                    cbr: ''
+                });
+
+                const viewMode = ref('list');
+                const currentPage = ref(1);
+                const pageSize = ref(20);
+
+                const caseList = ref([
+                    {
+                        case_code: 'c001',
+                        ah: '(2024)浙01民初1234号',
+                        aj_mc: '张三诉李四买卖合同纠纷案',
+                        fymc: '杭州市中级人民法院',
+                        ajlx: '民事',
+                        ay_ms: '买卖合同纠纷',
+                        trial_stage: 1,
+                        first_instance_ah: null,
+                        cbr_mc: '王法官',
+                        larq: '2024-01-15',
+                        bdje: 158000,
+                        has_起诉状: true,
+                        has_答辩状: true,
+                        has_判决书: true
+                    },
+                    {
+                        case_code: 'c002',
+                        ah: '(2024)浙01民终567号',
+                        aj_mc: '甲公司与乙公司租赁合同纠纷上诉案',
+                        fymc: '杭州市中级人民法院',
+                        ajlx: '民事',
+                        ay_ms: '租赁合同纠纷',
+                        trial_stage: 2,
+                        first_instance_ah: '(2023)浙0102民初8901号',
+                        cbr_mc: '李法官',
+                        larq: '2024-02-20',
+                        bdje: 520000,
+                        has_起诉状: true,
+                        has_答辩状: false,
+                        has_判决书: true
+                    },
+                    {
+                        case_code: 'c003',
+                        ah: '(2024)浙01刑初89号',
+                        aj_mc: '被告人赵某故意伤害案',
+                        fymc: '杭州市中级人民法院',
+                        ajlx: '刑事',
+                        ay_ms: '故意伤害罪',
+                        trial_stage: 1,
+                        first_instance_ah: null,
+                        cbr_mc: '陈法官',
+                        larq: '2024-03-05',
+                        bdje: null,
+                        has_起诉状: true,
+                        has_答辩状: true,
+                        has_判决书: false
+                    },
+                    {
+                        case_code: 'c004',
+                        ah: '(2024)浙01民初2345号',
+                        aj_mc: '刘某某诉某银行民间借贷纠纷案',
+                        fymc: '杭州市中级人民法院',
+                        ajlx: '民事',
+                        ay_ms: '民间借贷纠纷',
+                        trial_stage: 1,
+                        first_instance_ah: null,
+                        cbr_mc: '周法官',
+                        larq: '2024-03-12',
+                        bdje: 2800000,
+                        has_起诉状: true,
+                        has_答辩状: true,
+                        has_判决书: false
+                    }
+                ]);
+
+                const detailVisible = ref(false);
+                const currentCase = ref(null);
+
+                const showCaseDetail = (row) => {
+                    currentCase.value = row;
+                    detailVisible.value = true;
+                };
+
+                const handleSearch = () => console.log('搜索:', searchForm);
+                const handleReset = () => Object.keys(searchForm).forEach(k => searchForm[k] = k === 'trial_stage' ? null : '');
+
+                return {
+                    searchForm, viewMode, currentPage, pageSize,
+                    caseList, detailVisible, currentCase,
+                    showCaseDetail, handleSearch, handleReset
+                };
+            }
+        });
+
+        // 注册图标 - 使用 kebab-case
+        app.component('search-icon', Icons.Search);
+        app.component('refresh-icon', Icons.Refresh);
+        app.component('view-icon', Icons.View);
+        app.component('download-icon', Icons.Download);
+        app.component('document-icon', Icons.Document);
+        app.component('list-icon', Icons.List);
+        app.component('grid-icon', Icons.Grid);
+
+        app.use(ElementPlus);
+        app.mount('#app');
+    </script>
+</body>
+
+</html>
