@@ -1,4 +1,28 @@
-psycopg2-binary==2.9.9
-PyMySQL==1.1.0
-PyYAML==6.0.1
-python-dateutil==2.8.2
+# 数据资产检索系统 - Python依赖
+# 用于服务器脚本运行环境
+
+# ===== 数据库连接 =====
+psycopg2-binary==2.9.9      # PostgreSQL同步连接
+asyncpg==0.29.0             # PostgreSQL异步连接
+PyMySQL==1.1.0              # MySQL连接（导出元数据用）
+
+# ===== 配置与工具 =====
+PyYAML==6.0.1               # YAML配置文件解析
+python-dateutil==2.8.2      # 日期时间处理
+
+# ===== 文件处理 =====
+openpyxl==3.1.2             # Excel读写（法律文书导入）
+Pillow==10.2.0              # 图片处理
+aiofiles==23.2.1            # 异步文件操作
+
+# ===== 压缩包解压 =====
+rarfile==4.1                # RAR解压（法院卷宗）
+py7zr==0.20.8               # 7z解压（法院卷宗）
+
+# ===== Web框架（后端API） =====
+fastapi==0.109.0            # Web框架
+uvicorn[standard]==0.27.0   # ASGI服务器
+pydantic==2.5.3             # 数据验证
+pydantic-settings==2.1.0    # 配置管理
+python-multipart==0.0.6     # 文件上传
+PyJWT==2.8.0                # JWT认证
