@@ -85,7 +85,7 @@ const handleDownload = () => {
 
 <style scoped>
 /* =====================================================
-   Bento Grids / Apple Style - Asset Card
+   Glassmorphism - Asset Card
    ===================================================== */
 
 .asset-card {
@@ -94,16 +94,27 @@ const handleDownload = () => {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   
-  /* Bento 风格纯白卡片 */
-  background: #FFFFFF;
-  border: none;
-  box-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.04),
-    0 8px 16px rgba(0, 0, 0, 0.06);
+  /* 玻璃态样式 */
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   
-  /* 24px 大圆角 */
+  /* 大圆角 */
   border-radius: 20px;
   
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  
+  box-shadow: 
+    0 4px 16px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+/* 移除 el-card 默认样式 */
+:deep(.el-card__body) {
+  padding: 0;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -112,17 +123,19 @@ const handleDownload = () => {
 /* 悬停效果 */
 .asset-card:hover {
   transform: translateY(-6px);
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(102, 126, 234, 0.4) !important;
   box-shadow: 
-    0 8px 16px rgba(0, 0, 0, 0.08),
-    0 16px 32px rgba(0, 0, 0, 0.12);
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    0 0 24px rgba(102, 126, 234, 0.15);
 }
 
 /* 选中状态 */
 .asset-card.selected {
-  border: 2px solid #007AFF;
+  border: 2px solid #667eea !important;
   box-shadow: 
-    0 0 0 4px rgba(0, 122, 255, 0.15),
-    0 8px 16px rgba(0, 0, 0, 0.08);
+    0 0 0 4px rgba(102, 126, 234, 0.2),
+    0 8px 32px rgba(0, 0, 0, 0.3);
 }
 
 .card-image {
@@ -131,7 +144,7 @@ const handleDownload = () => {
   height: 160px;
   flex-shrink: 0;
   overflow: hidden;
-  background: #F5F5F7;
+  background: rgba(0, 0, 0, 0.3);
   border-radius: 20px 20px 0 0;
 }
 
@@ -152,7 +165,7 @@ const handleDownload = () => {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.35);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -166,31 +179,32 @@ const handleDownload = () => {
   opacity: 1;
 }
 
-/* 悬停按钮 - Apple 风格 */
+/* 悬停按钮 - 玻璃态 */
 .image-overlay :deep(.el-button) {
-  background: #FFFFFF !important;
-  border: none !important;
-  color: #1D1D1F !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .image-overlay :deep(.el-button:hover) {
-  background: #007AFF !important;
-  color: #FFFFFF !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border-color: transparent !important;
 }
 
 /* Checkbox 样式 */
 :deep(.el-checkbox__inner) {
-  background-color: #FFFFFF;
-  border-color: #D2D2D7;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
   border-radius: 6px;
   width: 20px;
   height: 20px;
 }
 
 :deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
-  background-color: #007AFF;
-  border-color: #007AFF;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: transparent;
 }
 
 :deep(.el-checkbox__inner::after) {
@@ -220,7 +234,7 @@ const handleDownload = () => {
   font-size: 14px;
   font-weight: 600;
   font-family: 'Inter', -apple-system, sans-serif;
-  color: #1D1D1F;
+  color: #FFFFFF;
   margin-bottom: 10px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -231,11 +245,11 @@ const handleDownload = () => {
   margin-bottom: auto;
 }
 
-/* Tag 样式 */
+/* Tag 样式 - 玻璃态 */
 .card-meta :deep(.el-tag) {
-  background: rgba(0, 122, 255, 0.1);
-  color: #007AFF;
-  border: none;
+  background: rgba(102, 126, 234, 0.25);
+  color: #a5b4fc;
+  border: 1px solid rgba(102, 126, 234, 0.4);
   border-radius: 8px;
   font-size: 12px;
   font-weight: 500;
@@ -247,7 +261,7 @@ const handleDownload = () => {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  border-top: 1px solid #E8E8ED;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 10px;
 }
 
@@ -257,10 +271,10 @@ const handleDownload = () => {
   gap: 6px;
   font-size: 12px;
   font-family: 'Inter', -apple-system, sans-serif;
-  color: #86868B;
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .info-item .el-icon {
-  color: #AEAEB2;
+  color: rgba(255, 255, 255, 0.5);
 }
 </style>

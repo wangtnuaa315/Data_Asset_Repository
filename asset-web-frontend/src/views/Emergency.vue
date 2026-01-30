@@ -125,6 +125,7 @@
     <!-- 列表视图 -->
     <div v-else-if="searchResults.length > 0 && viewMode === 'list'" class="results-list">
       <el-table
+        ref="tableRef"
         :data="searchResults"
         style="width: 100%"
         @selection-change="handleSelectionChange"
@@ -204,7 +205,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search, Document, Loading, Warning, Cpu, Aim, Refresh, Download, Grid, List, View } from '@element-plus/icons-vue'
 import api from '../api/emergency'
@@ -247,6 +248,22 @@ const viewMode = ref('grid')
 // 详情弹窗
 const detailVisible = ref(false)
 const currentAsset = ref(null)
+
+// 表格引用
+const tableRef = ref(null)
+
+// 监听视图模式切换，同步表格选中状态
+watch(viewMode, async (newMode) => {
+  if (newMode === 'list' && tableRef.value) {
+    await nextTick()
+    // 同步卡片视图的选中状态到表格
+    searchResults.value.forEach(row => {
+      if (selectedAssets.value.includes(row.asset_id)) {
+        tableRef.value.toggleRowSelection(row, true)
+      }
+    })
+  }
+})
 
 // 加载告警类型
 onMounted(async () => {
@@ -383,8 +400,10 @@ const downloadAsset = (asset) => {
 
 <style scoped>
 /* =====================================================
-   Bento Grids / Apple Style - Emergency Page
+   Glassmorphism - Emergency Page
    ===================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 .emergency-page {
   height: 100%;
@@ -397,7 +416,7 @@ const downloadAsset = (asset) => {
 }
 
 /* =====================================================
-   搜索区域 - Bento 白色卡片
+   搜索区域 - 玻璃态卡片
    ===================================================== */
 .search-section {
   max-width: 1200px;
@@ -405,12 +424,15 @@ const downloadAsset = (asset) => {
   padding: 24px 32px;
   width: 100%;
   
-  /* Bento 风格白色卡片 */
-  background: #FFFFFF;
+  /* 玻璃态样式 */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 24px;
   box-shadow: 
-    0 4px 6px rgba(0, 0, 0, 0.05),
-    0 10px 20px rgba(0, 0, 0, 0.08);
+    0 8px 32px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 
 .search-form-flex {
@@ -427,27 +449,36 @@ const downloadAsset = (asset) => {
   align-items: center;
 }
 
-/* Apple 风格输入框 - 52px 高度, 12px 圆角 */
+/* 玻璃态表单标签 */
+.search-section :deep(.el-form-item__label) {
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 500;
+  font-family: 'Inter', -apple-system, sans-serif;
+}
+
+/* 玻璃态输入框 */
 .search-section :deep(.el-input__wrapper),
 .search-section :deep(.el-select__wrapper) {
   height: 48px !important;
   border-radius: 12px !important;
   padding: 0 16px !important;
-  border: 1px solid #D2D2D7 !important;
-  box-shadow: none !important;
-  background: #FFFFFF !important;
-  transition: all 0.2s ease !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.3s ease !important;
 }
 
 .search-section :deep(.el-input__wrapper:hover),
 .search-section :deep(.el-select__wrapper:hover) {
-  border-color: #86868B !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
 }
 
 .search-section :deep(.el-input__wrapper.is-focus),
 .search-section :deep(.el-select__wrapper.is-focus) {
-  border-color: #007AFF !important;
-  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(102, 126, 234, 0.6) !important;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2) !important;
 }
 
 .search-section :deep(.el-input__inner) {
@@ -455,17 +486,27 @@ const downloadAsset = (asset) => {
   line-height: 46px !important;
   font-family: 'Inter', -apple-system, sans-serif !important;
   font-size: 15px !important;
-  color: #1D1D1F !important;
+  color: #FFFFFF !important;
 }
 
 .search-section :deep(.el-input__inner::placeholder) {
-  color: #86868B !important;
+  color: rgba(255, 255, 255, 0.5) !important;
 }
 
-.search-section :deep(.el-form-item__label) {
-  color: #1D1D1F;
-  font-weight: 500;
-  font-family: 'Inter', -apple-system, sans-serif;
+.search-section :deep(.el-input__prefix),
+.search-section :deep(.el-input__suffix) {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* Select 下拉样式 */
+.search-section :deep(.el-select .el-select__tags-text) {
+  color: #FFFFFF;
+}
+
+.search-section :deep(.el-tag) {
+  background: rgba(102, 126, 234, 0.3);
+  border-color: rgba(102, 126, 234, 0.5);
+  color: #FFFFFF;
 }
 
 /* 控件宽度 - 统一宽度 */
@@ -506,35 +547,37 @@ const downloadAsset = (asset) => {
   margin-left: auto;
 }
 
-/* Apple 蓝色按钮 */
+/* 渐变按钮 */
 .search-actions-inline :deep(.el-button--primary) {
-  background: #007AFF !important;
-  border-color: #007AFF !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
   border-radius: 12px !important;
   height: 48px !important;
   font-weight: 600 !important;
   font-family: 'Inter', -apple-system, sans-serif !important;
   padding: 0 24px !important;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4) !important;
 }
 
 .search-actions-inline :deep(.el-button--primary:hover) {
-  background: #0066CC !important;
-  border-color: #0066CC !important;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5) !important;
 }
 
 .reset-btn {
-  background: #F5F5F7 !important;
-  border-color: #D2D2D7 !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
   border-radius: 12px !important;
   height: 48px !important;
-  color: #1D1D1F !important;
+  color: rgba(255, 255, 255, 0.9) !important;
   font-family: 'Inter', -apple-system, sans-serif !important;
+  backdrop-filter: blur(10px);
 }
 
 .reset-btn:hover {
-  color: #007AFF !important;
-  border-color: #007AFF !important;
-  background: rgba(0, 122, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.2) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #FFFFFF !important;
 }
 
 /* 隐藏不需要的元素 */
@@ -550,29 +593,33 @@ const downloadAsset = (asset) => {
 }
 
 /* =====================================================
-   结果统计栏 - Bento 风格
+   结果统计栏 - 玻璃态
    ===================================================== */
 .results-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px;
-  background: #FFFFFF;
+  
+  /* 玻璃态样式 */
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .stats, .selected-info {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #86868B;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 14px;
   font-family: 'Inter', -apple-system, sans-serif;
 }
 
 .stats strong, .selected-info strong {
-  color: #007AFF;
+  color: #667eea;
   font-size: 18px;
   font-weight: 600;
 }
@@ -590,11 +637,15 @@ const downloadAsset = (asset) => {
   align-items: center;
   justify-content: center;
   gap: 20px;
-  color: #007AFF;
+  color: #667eea;
+}
+
+.loading-container p {
+  color: rgba(255, 255, 255, 0.7);
 }
 
 /* =====================================================
-   结果网格 - Bento 风格
+   结果网格 - 玻璃态风格
    ===================================================== */
 .results-grid {
   display: grid;
@@ -615,8 +666,12 @@ const downloadAsset = (asset) => {
   min-height: 0;
   border-radius: 16px;
   overflow: auto;
-  background: #FFFFFF;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  
+  /* 玻璃态样式 */
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   animation: fadeIn 0.4s ease-out;
 }
 
@@ -625,24 +680,24 @@ const downloadAsset = (asset) => {
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* 表格适配 */
+/* 表格适配 - 玻璃态 */
 :deep(.asset-table) {
-  --el-table-border-color: #E8E8ED;
-  --el-table-header-bg-color: #F5F5F7;
-  --el-table-bg-color: #FFFFFF;
-  --el-table-tr-bg-color: #FFFFFF;
-  --el-table-text-color: #3C3C43;
-  --el-table-header-text-color: #1D1D1F;
-  --el-table-row-hover-bg-color: rgba(0, 122, 255, 0.04);
+  --el-table-border-color: rgba(255, 255, 255, 0.1);
+  --el-table-header-bg-color: rgba(255, 255, 255, 0.05);
+  --el-table-bg-color: transparent;
+  --el-table-tr-bg-color: transparent;
+  --el-table-text-color: rgba(255, 255, 255, 0.9);
+  --el-table-header-text-color: rgba(255, 255, 255, 0.7);
+  --el-table-row-hover-bg-color: rgba(102, 126, 234, 0.15);
 }
 
 :deep(.el-table__inner-wrapper::before) {
-  background-color: #E8E8ED;
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 :deep(.el-table td.el-table__cell),
 :deep(.el-table th.el-table__cell) {
-  border-bottom: 1px solid #E8E8ED !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
 :deep(.el-table th.el-table__cell) {
@@ -655,23 +710,23 @@ const downloadAsset = (asset) => {
   height: 50px;
   border-radius: 8px;
   object-fit: cover;
-  border: 1px solid #E8E8ED;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   transition: all 0.2s ease;
 }
 
 .table-thumbnail:hover {
-  border-color: #007AFF;
-  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.15);
+  border-color: #667eea;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
 }
 
 .no-analysis {
-  color: #AEAEB2;
+  color: rgba(255, 255, 255, 0.4);
   font-style: italic;
   font-size: 12px;
 }
 
 /* =====================================================
-   分页 - Apple 风格
+   分页 - 玻璃态风格
    ===================================================== */
 .pagination-container {
   display: flex;
@@ -682,43 +737,48 @@ const downloadAsset = (asset) => {
 
 :deep(.el-pagination) {
   --el-pagination-bg-color: transparent;
-  --el-pagination-text-color: #86868B;
-  --el-pagination-hover-color: #007AFF;
+  --el-pagination-text-color: rgba(255, 255, 255, 0.7);
+  --el-pagination-hover-color: #667eea;
 }
 
 :deep(.el-pagination .el-pager li) {
-  background: #FFFFFF !important;
-  color: #86868B !important;
-  border: 1px solid #D2D2D7;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   margin: 0 4px;
   border-radius: 8px;
   font-family: 'Inter', -apple-system, sans-serif;
+  backdrop-filter: blur(10px);
 }
 
 :deep(.el-pagination .el-pager li:hover) {
-  color: #007AFF !important;
-  border-color: #007AFF;
+  color: #FFFFFF !important;
+  border-color: rgba(102, 126, 234, 0.5);
+  background: rgba(102, 126, 234, 0.2) !important;
 }
 
 :deep(.el-pagination .el-pager li.is-active) {
-  background: #007AFF !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   color: #FFFFFF !important;
   font-weight: 600;
-  border-color: #007AFF;
+  border-color: transparent;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
 }
 
 :deep(.el-pagination .btn-prev),
 :deep(.el-pagination .btn-next) {
-  background: #FFFFFF !important;
-  color: #86868B !important;
-  border: 1px solid #D2D2D7;
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 8px;
+  backdrop-filter: blur(10px);
 }
 
 :deep(.el-pagination .btn-prev:hover),
 :deep(.el-pagination .btn-next:hover) {
-  color: #007AFF !important;
-  border-color: #007AFF;
+  color: #FFFFFF !important;
+  border-color: rgba(102, 126, 234, 0.5);
+  background: rgba(102, 126, 234, 0.2) !important;
 }
 
 /* 列表视图表格优化 */
@@ -728,9 +788,9 @@ const downloadAsset = (asset) => {
 }
 
 .asset-table :deep(.el-table__header th) {
-  background: #FAFAFA;
+  background: rgba(255, 255, 255, 0.05);
   font-weight: 600;
-  color: #86868B;
+  color: rgba(255, 255, 255, 0.7);
   white-space: nowrap;
 }
 
@@ -747,24 +807,33 @@ const downloadAsset = (asset) => {
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 }
 
+/* 设备编码 - 玻璃态 */
 .device-code {
   font-family: 'SF Mono', 'Consolas', monospace;
   font-size: 13px;
-  color: #555;
-  background: #F5F7FA;
-  padding: 4px 8px;
-  border-radius: 4px;
+  color: #a5b4fc;
+  background: rgba(102, 126, 234, 0.2);
+  border: 1px solid rgba(102, 126, 234, 0.3);
+  padding: 4px 10px;
+  border-radius: 6px;
   display: inline-block;
 }
 
 .time-text {
   font-size: 13px;
-  color: #86868B;
+  color: rgba(255, 255, 255, 0.7);
   white-space: nowrap;
   font-family: 'SF Mono', monospace;
 }
 
-/* 操作按钮 - Apple 风格图标 (最终修复版布局) */
+/* 告警类型 Tag - 玻璃态 */
+:deep(.el-tag--warning) {
+  background: rgba(245, 158, 11, 0.2) !important;
+  border-color: rgba(245, 158, 11, 0.3) !important;
+  color: #fbbf24 !important;
+}
+
+/* 操作按钮 - 玻璃态 */
 .action-btns {
   display: flex;
   align-items: center;
@@ -782,8 +851,8 @@ const downloadAsset = (asset) => {
   justify-content: center;
   
   font-size: 18px;
-  color: #007AFF;
-  background: rgba(0, 122, 255, 0.08);
+  color: #a5b4fc;
+  background: rgba(102, 126, 234, 0.15);
   
   cursor: pointer;
   transition: all 0.2s ease;
@@ -794,16 +863,114 @@ const downloadAsset = (asset) => {
 }
 
 .action-icon:hover {
-  background: rgba(0, 122, 255, 0.15);
+  background: rgba(102, 126, 234, 0.3);
   transform: scale(1.05);
 }
 
 .action-icon.download {
-  color: #34C759;
-  background: rgba(52, 199, 89, 0.08);
+  color: #34d399;
+  background: rgba(52, 211, 153, 0.15);
 }
 
 .action-icon.download:hover {
-  background: rgba(52, 199, 89, 0.15);
+  background: rgba(52, 211, 153, 0.3);
+}
+
+/* 批量下载按钮 - 玻璃态 */
+.selected-info :deep(.el-button--success) {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 12px rgba(52, 211, 153, 0.3) !important;
+}
+
+.selected-info :deep(.el-button--success:hover) {
+  box-shadow: 0 6px 16px rgba(52, 211, 153, 0.4) !important;
+}
+
+/* 视图切换按钮组 - 玻璃态 */
+.view-toggle :deep(.el-button) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.view-toggle :deep(.el-button:hover) {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #FFFFFF !important;
+}
+
+.view-toggle :deep(.el-button--primary) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border-color: transparent !important;
+  color: #FFFFFF !important;
+}
+
+/* 分页输入框和选择框 - 玻璃态 */
+:deep(.el-pagination .el-input__wrapper) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: none !important;
+}
+
+:deep(.el-pagination .el-input__inner) {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.el-pagination .el-select__wrapper) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: none !important;
+}
+
+:deep(.el-pagination .el-select__selected-item) {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.el-pagination .el-pagination__total) {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+:deep(.el-pagination .el-pagination__goto),
+:deep(.el-pagination .el-pagination__classifier) {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* 表格勾选框 - 玻璃态 */
+:deep(.el-checkbox__inner) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+:deep(.el-checkbox__input.is-checked .el-checkbox__inner) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-color: transparent;
+}
+
+/* Empty 状态 - 玻璃态 */
+:deep(.el-empty__description) {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* 滚动条美化 */
+.results-grid::-webkit-scrollbar,
+.results-list::-webkit-scrollbar {
+  width: 8px;
+}
+
+.results-grid::-webkit-scrollbar-track,
+.results-list::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.results-grid::-webkit-scrollbar-thumb,
+.results-list::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+.results-grid::-webkit-scrollbar-thumb:hover,
+.results-list::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.5);
 }
 </style>

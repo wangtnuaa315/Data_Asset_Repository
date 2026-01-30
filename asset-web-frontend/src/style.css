@@ -41,17 +41,17 @@
   --border-color: #D2D2D7;
   --border-light: #E8E8ED;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.04);
-  --shadow-md: 
+  --shadow-md:
     0 4px 6px rgba(0, 0, 0, 0.05),
     0 10px 20px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 
+  --shadow-lg:
     0 4px 6px rgba(0, 0, 0, 0.05),
     0 10px 20px rgba(0, 0, 0, 0.08),
     0 20px 40px rgba(0, 0, 0, 0.1);
-  --shadow-hover: 
+  --shadow-hover:
     0 8px 16px rgba(0, 0, 0, 0.08),
     0 16px 32px rgba(0, 0, 0, 0.12);
-  
+
   /* 圆角 - 大圆角 */
   --radius: 24px;
   --radius-sm: 12px;
@@ -380,4 +380,326 @@ body::before {
 
 .el-dialog__wrapper {
   z-index: 2000 !important;
+}
+
+/* =====================================================
+   玻璃态资产详情弹窗 (全局样式)
+   高级玻璃态设计 - 精美渐变 + 视觉层次
+   ===================================================== */
+.glass-detail-dialog.el-dialog {
+  background: linear-gradient(145deg,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.06) 50%,
+      rgba(255, 255, 255, 0.08) 100%) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 28px !important;
+  overflow: hidden !important;
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+    0 1px 0 rgba(255, 255, 255, 0.2) inset !important;
+}
+
+.glass-detail-dialog .el-dialog__header {
+  /* 渐变标题栏 */
+  background: linear-gradient(135deg,
+      rgba(102, 126, 234, 0.2) 0%,
+      rgba(118, 75, 162, 0.15) 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+  padding: 22px 28px !important;
+  margin: 0 !important;
+  border-radius: 28px 28px 0 0 !important;
+}
+
+.glass-detail-dialog .el-dialog__title {
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  font-size: 20px !important;
+  letter-spacing: 0.5px !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2) !important;
+}
+
+.glass-detail-dialog .el-dialog__headerbtn {
+  top: 22px !important;
+  right: 22px !important;
+  width: 32px !important;
+  height: 32px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease !important;
+}
+
+.glass-detail-dialog .el-dialog__headerbtn:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+}
+
+.glass-detail-dialog .el-dialog__headerbtn .el-dialog__close {
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-size: 16px !important;
+}
+
+.glass-detail-dialog .el-dialog__headerbtn:hover .el-dialog__close {
+  color: #FFFFFF !important;
+}
+
+.glass-detail-dialog .el-dialog__body {
+  padding: 28px !important;
+  background: transparent !important;
+}
+
+.glass-detail-dialog .el-dialog__footer {
+  background: linear-gradient(to top,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 100%) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 20px 28px !important;
+  border-radius: 0 0 28px 28px !important;
+}
+
+/* 精美描述表格 */
+.glass-detail-dialog .el-descriptions {
+  --el-descriptions-item-bordered-label-background: transparent;
+}
+
+.glass-detail-dialog .el-descriptions__body {
+  background: transparent !important;
+  border-radius: 16px !important;
+  overflow: hidden !important;
+}
+
+.glass-detail-dialog .el-descriptions__table {
+  border-radius: 16px !important;
+  overflow: hidden !important;
+}
+
+.glass-detail-dialog .el-descriptions__label {
+  background: rgba(102, 126, 234, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  padding: 14px 18px !important;
+}
+
+.glass-detail-dialog .el-descriptions__content {
+  background: rgba(255, 255, 255, 0.04) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  color: #FFFFFF !important;
+  font-size: 14px !important;
+  padding: 14px 18px !important;
+}
+
+/* 玻璃态弹窗内的输入框 */
+.glass-detail-dialog .el-input__wrapper {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: none !important;
+  border-radius: 8px !important;
+}
+
+.glass-detail-dialog .el-input__inner {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* 复制按钮区域 */
+.glass-detail-dialog .el-input-group__append {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  border-radius: 0 10px 10px 0 !important;
+  padding: 0 4px !important;
+}
+
+.glass-detail-dialog .el-input-group__append .el-button {
+  color: #FFFFFF !important;
+  background: transparent !important;
+  border: none !important;
+  margin: 0 !important;
+  padding: 8px 16px !important;
+  height: auto !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+}
+
+.glass-detail-dialog .el-input-group__append .el-button:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 玻璃态弹窗内的 Tag */
+.glass-detail-dialog .el-tag--warning {
+  background: rgba(245, 158, 11, 0.25) !important;
+  border-color: rgba(245, 158, 11, 0.4) !important;
+  color: #fbbf24 !important;
+}
+
+.glass-detail-dialog .el-tag--info {
+  background: rgba(102, 126, 234, 0.25) !important;
+  border-color: rgba(102, 126, 234, 0.4) !important;
+  color: #a5b4fc !important;
+}
+
+/* 玻璃态弹窗内的按钮 */
+.glass-detail-dialog .el-button:not(.el-button--primary) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 10px !important;
+}
+
+.glass-detail-dialog .el-button--primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4) !important;
+}
+
+/* =====================================================
+   法律文书详情弹窗 - 玻璃态 (全局样式)
+   ===================================================== */
+.detail-dialog.el-dialog {
+  background: linear-gradient(145deg,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.06) 50%,
+      rgba(255, 255, 255, 0.08) 100%) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 28px !important;
+  overflow: hidden !important;
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+    0 1px 0 rgba(255, 255, 255, 0.2) inset !important;
+}
+
+.detail-dialog .el-dialog__header {
+  background: linear-gradient(135deg,
+      rgba(102, 126, 234, 0.2) 0%,
+      rgba(118, 75, 162, 0.15) 100%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
+  padding: 22px 28px !important;
+  margin: 0 !important;
+  border-radius: 28px 28px 0 0 !important;
+}
+
+.detail-dialog .el-dialog__title {
+  color: #FFFFFF !important;
+  font-weight: 700 !important;
+  font-size: 20px !important;
+}
+
+.detail-dialog .el-dialog__headerbtn .el-dialog__close {
+  color: rgba(255, 255, 255, 0.7) !important;
+}
+
+.detail-dialog .el-dialog__headerbtn:hover .el-dialog__close {
+  color: #FFFFFF !important;
+}
+
+.detail-dialog .el-dialog__body {
+  padding: 28px !important;
+  background: transparent !important;
+}
+
+.detail-dialog .el-dialog__footer {
+  background: linear-gradient(to top,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 100%) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 20px 28px !important;
+  border-radius: 0 0 28px 28px !important;
+}
+
+/* 法律文书弹窗按钮 */
+.detail-dialog .el-button:not(.el-button--primary) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 10px !important;
+}
+
+.detail-dialog .el-button--primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4) !important;
+}
+
+/* 法律文书弹窗 Tag */
+.detail-dialog .el-tag {
+  background: rgba(102, 126, 234, 0.2) !important;
+  border-color: rgba(102, 126, 234, 0.3) !important;
+  color: #a5b4fc !important;
+}
+
+/* =====================================================
+   法院案件详情弹窗 - 玻璃态 (全局样式)
+   ===================================================== */
+.court-detail-dialog.el-dialog {
+  background: linear-gradient(145deg,
+      rgba(255, 255, 255, 0.12) 0%,
+      rgba(255, 255, 255, 0.06) 50%,
+      rgba(255, 255, 255, 0.08) 100%) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 28px !important;
+  overflow: hidden !important;
+  box-shadow:
+    0 25px 50px -12px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(255, 255, 255, 0.1) inset,
+    0 1px 0 rgba(255, 255, 255, 0.2) inset !important;
+}
+
+.court-detail-dialog .el-dialog__header {
+  display: none !important;
+}
+
+.court-detail-dialog .el-dialog__body {
+  padding: 28px !important;
+  background: transparent !important;
+}
+
+.court-detail-dialog .el-dialog__footer {
+  background: linear-gradient(to top,
+      rgba(255, 255, 255, 0.08) 0%,
+      transparent 100%) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 20px 28px !important;
+  border-radius: 0 0 28px 28px !important;
+}
+
+/* 法院弹窗按钮 */
+.court-detail-dialog .el-button:not(.el-button--primary) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-radius: 10px !important;
+}
+
+.court-detail-dialog .el-button--primary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  border-radius: 10px !important;
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.4) !important;
+}
+
+/* 法院弹窗 Tag */
+.court-detail-dialog .el-tag {
+  background: rgba(102, 126, 234, 0.2) !important;
+  border-color: rgba(102, 126, 234, 0.3) !important;
+  color: #a5b4fc !important;
+}
+
+.court-detail-dialog .el-tag--warning {
+  background: rgba(251, 191, 36, 0.2) !important;
+  border-color: rgba(251, 191, 36, 0.4) !important;
+  color: #fbbf24 !important;
+}
+
+.court-detail-dialog .el-tag--danger {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  color: #f87171 !important;
 }

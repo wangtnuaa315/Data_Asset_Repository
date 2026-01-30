@@ -4,67 +4,61 @@
     title="资产详情"
     width="800px"
     :before-close="handleClose"
+    :append-to-body="true"
+    class="glass-detail-dialog"
   >
-    <div v-if="asset" class="detail-container">
-      <!-- 大图预览 -->
-      <div class="image-preview">
-        <img 
-          :src="asset.thumbnail_url.replace('/thumbnail/', '/download/')" 
-          :alt="asset.filename"
-          @error="handleImageError"
-        />
+    <div v-if="asset" class="detail-scroll-content">
+      <div class="detail-container">
+        <!-- 大图预览 -->
+        <div class="image-preview">
+          <img 
+            :src="asset.thumbnail_url.replace('/thumbnail/', '/download/')" 
+            :alt="asset.filename"
+            @error="handleImageError"
+          />
+        </div>
+
+        <!-- 详细信息 -->
+        <el-descriptions :column="2" border class="detail-info" :label-class-name="'detail-label'">
+          <el-descriptions-item label="文件名">
+            {{ asset.filename }}
+          </el-descriptions-item>
+          
+          <el-descriptions-item label="文件大小">
+            {{ formatFileSize(asset.filesize) }}
+          </el-descriptions-item>
+
+          <el-descriptions-item label="告警名称">
+            <el-tag type="warning" effect="dark">
+              {{ asset.alarm_name }}
+            </el-tag>
+          </el-descriptions-item>
+
+          <el-descriptions-item label="告警时间">
+            {{ formatDate(asset.alarm_time) }}
+          </el-descriptions-item>
+
+          <el-descriptions-item label="设备编码" v-if="asset.dev_code">
+            <el-tag type="info">{{ asset.dev_code }}</el-tag>
+          </el-descriptions-item>
+
+          <el-descriptions-item label="资产ID">
+            #{{ asset.asset_id }}
+          </el-descriptions-item>
+
+          <el-descriptions-item label="文件路径" :span="2">
+            <span class="filepath-text">{{ asset.filepath }}</span>
+          </el-descriptions-item>
+        </el-descriptions>
       </div>
-
-      <!-- 详细信息 -->
-      <el-descriptions :column="2" border class="detail-info">
-        <el-descriptions-item label="文件名">
-          {{ asset.filename }}
-        </el-descriptions-item>
-        
-        <el-descriptions-item label="文件大小">
-          {{ formatFileSize(asset.filesize) }}
-        </el-descriptions-item>
-
-        <el-descriptions-item label="告警名称">
-          <el-tag type="warning" effect="dark">
-            {{ asset.alarm_name }}
-          </el-tag>
-        </el-descriptions-item>
-
-        <el-descriptions-item label="告警时间">
-          {{ formatDate(asset.alarm_time) }}
-        </el-descriptions-item>
-
-        <el-descriptions-item label="设备编码" v-if="asset.dev_code">
-          <el-tag type="info">{{ asset.dev_code }}</el-tag>
-        </el-descriptions-item>
-
-        <el-descriptions-item label="资产ID">
-          #{{ asset.asset_id }}
-        </el-descriptions-item>
-
-
-
-        <el-descriptions-item label="文件路径" :span="2">
-          <el-input 
-            :model-value="asset.filepath" 
-            readonly 
-            size="small"
-          >
-            <template #append>
-              <el-button 
-                :icon="CopyDocument" 
-                @click="copyPath"
-              >复制</el-button>
-            </template>
-          </el-input>
-        </el-descriptions-item>
-      </el-descriptions>
     </div>
 
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">关闭</el-button>
+        <el-button type="primary" :icon="CopyDocument" @click="copyPath">
+          复制路径
+        </el-button>
         <el-button type="primary" :icon="Download" @click="handleDownload">
           下载文件
         </el-button>
@@ -133,12 +127,10 @@ const handleImageError = (e) => {
 const copyPath = async () => {
   const text = props.asset.filepath
   try {
-    // 尝试使用现代Clipboard API
     if (navigator.clipboard && window.isSecureContext) {
       await navigator.clipboard.writeText(text)
       ElMessage.success('路径已复制到剪贴板')
     } else {
-      // 兼容方案：使用传统的execCommand
       const textArea = document.createElement('textarea')
       textArea.value = text
       textArea.style.position = 'fixed'
@@ -166,57 +158,69 @@ const handleDownload = () => {
 </script>
 
 <style scoped>
+/* 滚动容器 - 与法律文书一致的高度限制 */
+.detail-scroll-content {
+  max-height: 50vh;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.detail-scroll-content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.detail-scroll-content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 3px;
+}
+
+.detail-scroll-content::-webkit-scrollbar-thumb:hover {
+  background: rgba(102, 126, 234, 0.5);
+}
+
 .detail-container {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 16px;
 }
 
 .image-preview {
   width: 100%;
-  max-height: 400px;
+  max-height: 220px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-secondary);
-  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 12px;
   overflow: hidden;
 }
 
 .image-preview img {
   max-width: 100%;
-  max-height: 400px;
+  max-height: 220px;
   object-fit: contain;
 }
 
-.detail-info {
-  margin-top: 20px;
+.filepath-text {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  word-break: break-all;
 }
 
-.no-analysis {
-  color: #9ca3af;
-  font-size: 14px;
-  font-style: italic;
+.detail-info {
+  margin-top: 12px;
+}
+
+/* 标签列宽度调整 */
+:deep(.el-descriptions__label) {
+  width: 90px !important;
+  min-width: 90px !important;
+  white-space: nowrap !important;
 }
 
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-}
-
-:deep(.el-dialog) {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-}
-
-:deep(.el-dialog__header) {
-  border-bottom: 1px solid var(--border-color);
-  background: linear-gradient(135deg, rgba(0, 212, 255, 0.1) 0%, rgba(123, 47, 247, 0.1) 100%);
-}
-
-:deep(.el-dialog__title) {
-  color: var(--primary-color);
-  font-weight: 600;
 }
 </style>

@@ -98,11 +98,14 @@ class CaseSearchRequest(BaseModel):
     ajlx_mc: Optional[str] = Field(None, description="案件类型")
     trial_stage: Optional[int] = Field(None, description="审判阶段")
     cbr_mc: Optional[str] = Field(None, description="承办人")
+    region: Optional[str] = Field(None, description="区域（法院）")
+    dossier_categories: Optional[List[int]] = Field(None, description="卷宗分类ID列表")
     start_date: Optional[str] = Field(None, description="立案开始日期")
     end_date: Optional[str] = Field(None, description="立案结束日期")
     keyword: Optional[str] = Field(None, description="关键词")
     page: int = Field(1, ge=1, description="页码")
     page_size: int = Field(20, ge=1, le=100, description="每页数量")
+
 
 
 class CaseSearchResponse(BaseModel):
@@ -138,7 +141,11 @@ DOSSIER_CATEGORY_MAP = {
     10: "行政复议决定书",
     11: "立案审批表",
     12: "调解笔录",
-    13: "调解协议"
+    13: "调解协议",
+    14: "送达回证",
+    15: "上诉状",
+    16: "听证笔录",
+    17: "谈话笔录",
 }
 
 

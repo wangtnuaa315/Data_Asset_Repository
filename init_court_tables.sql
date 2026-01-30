@@ -164,6 +164,7 @@ SELECT
     cc.ktrq,
     cc.bdje,
     cc.close_status,
+    cc.isdel,  -- 添加 isdel 字段用于查询过滤
     -- 卷宗统计
     COUNT(cd.id) AS dossier_count,
     COUNT(cd.id) FILTER (WHERE cd.dossier_category = 1) > 0 AS has_indictment,     -- 起诉状

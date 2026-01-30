@@ -110,22 +110,43 @@
 
         <el-table-column prop="case_cause" label="案由" min-width="150" show-overflow-tooltip>
           <template #default="{ row }">
-            <el-tag effect="plain" size="small">{{ row.case_cause }}</el-tag>
+            <el-tag v-if="row.case_cause" effect="plain" size="small">{{ row.case_cause }}</el-tag>
+            <span v-else class="empty-text">-</span>
           </template>
         </el-table-column>
 
         <el-table-column label="类型" width="80">
           <template #default="{ row }">
-            <el-tag :type="getTagType(row.case_type)" effect="dark" size="small">
+            <el-tag v-if="row.case_type" :type="getTagType(row.case_type)" effect="dark" size="small">
               {{ row.case_type }}
             </el-tag>
+            <span v-else class="empty-text">-</span>
           </template>
         </el-table-column>
 
-        <el-table-column prop="trial_procedure" label="程序" width="80" />
-        <el-table-column prop="region" label="地域" width="100" show-overflow-tooltip />
-        <el-table-column prop="judgment_year" label="年份" width="80" />
-        <el-table-column prop="judgment_result" label="结果" min-width="120" show-overflow-tooltip />
+        <el-table-column label="程序" width="80">
+          <template #default="{ row }">
+            {{ row.trial_procedure || '-' }}
+          </template>
+        </el-table-column>
+        
+        <el-table-column label="地域" width="100" show-overflow-tooltip>
+          <template #default="{ row }">
+            {{ row.region || '-' }}
+          </template>
+        </el-table-column>
+        
+        <el-table-column label="年份" width="80">
+          <template #default="{ row }">
+            {{ row.judgment_year || '-' }}
+          </template>
+        </el-table-column>
+        
+        <el-table-column label="结果" min-width="120" show-overflow-tooltip>
+          <template #default="{ row }">
+            {{ row.judgment_result || '-' }}
+          </template>
+        </el-table-column>
       </el-table>
     </div>
 
@@ -418,17 +439,21 @@ const formatAmount = (amount) => {
   z-index: 1;
 }
 
-/* 搜索区域 */
+/* 搜索区域 - 玻璃态 */
 .search-section {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px 24px;
   width: 100%;
-  background: #FFFFFF;
+  /* 玻璃态背景 */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
   border-radius: 20px;
   box-shadow: 
-    0 4px 6px rgba(0, 0, 0, 0.05),
-    0 10px 20px rgba(0, 0, 0, 0.08);
+    0 8px 32px rgba(0, 0, 0, 0.15),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -461,7 +486,7 @@ const formatAmount = (amount) => {
 
 .filter-item .filter-label {
   font-size: 13px;
-  color: #86868B;
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 500;
   white-space: nowrap;
   flex-shrink: 0;
@@ -491,38 +516,57 @@ const formatAmount = (amount) => {
   flex-shrink: 0;
 }
 
-/* Apple 风格输入框 */
+/* 玻璃态输入框 */
 .search-section :deep(.el-input__wrapper),
 .search-section :deep(.el-select__wrapper) {
   height: 44px !important;
   border-radius: 10px !important;
   padding: 0 12px !important;
-  border: 1px solid #D2D2D7 !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
   box-shadow: none !important;
-  background: #FFFFFF !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: blur(10px) !important;
 }
 
 .search-section :deep(.el-input__wrapper.is-focus),
 .search-section :deep(.el-select__wrapper.is-focus) {
-  border-color: #007AFF !important;
-  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1) !important;
+  border-color: rgba(102, 126, 234, 0.6) !important;
+  box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15) !important;
 }
 
 .search-section :deep(.el-input__inner) {
   height: 42px !important;
   font-size: 14px !important;
+  color: #FFFFFF !important;
 }
 
+.search-section :deep(.el-input__inner::placeholder) {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.search-section :deep(.el-select__placeholder) {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.search-section :deep(.el-select__selected-item) {
+  color: #FFFFFF !important;
+}
+
+/* 玻璃态按钮 */
 .search-section :deep(.el-button--primary) {
-  background: #007AFF !important;
-  border-color: #007AFF !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
   border-radius: 10px !important;
   height: 44px !important;
   font-weight: 600 !important;
   padding: 0 20px !important;
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3) !important;
 }
 
 .search-section :deep(.el-button:not(.el-button--primary)) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.9) !important;
   border-radius: 10px !important;
   height: 44px !important;
 }
@@ -576,51 +620,57 @@ const formatAmount = (amount) => {
   height: 48px !important;
 }
 
-/* 结果统计 - 与 Emergency 一致 */
+/* 结果统计 - 玻璃态 */
 .results-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 16px 24px;
-  background: #FFFFFF;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 
 .stats {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: #86868B;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 14px;
 }
 
 .stats strong {
-  color: #007AFF;
+  color: #a5b4fc;
   font-size: 18px;
   font-weight: 600;
 }
 
-/* 列表视图 - 与 Emergency 一致 */
+/* 列表视图 - 玻璃态 */
 .results-list {
   flex: 1;
   min-height: 0;
   border-radius: 16px;
   overflow: auto;
-  background: #FFFFFF;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* 表格样式 */
+/* 表格样式 - 玻璃态 */
 .document-table {
   width: 100% !important;
+  --el-table-bg-color: transparent !important;
+  --el-table-tr-bg-color: transparent !important;
 }
 
 .document-table :deep(th.el-table__cell) {
-  background: #F8F8FA !important;
-  color: #1D1D1F;
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: rgba(255, 255, 255, 0.7);
   font-weight: 600;
-  border-bottom: 1px solid #E5E5E5;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   height: 52px;
 }
 
@@ -628,15 +678,141 @@ const formatAmount = (amount) => {
   cursor: pointer;
 }
 
-.document-table :deep(.el-table__row:hover > td) {
-  background: rgba(0, 122, 255, 0.04) !important;
+.document-table :deep(td.el-table__cell) {
+  background: transparent !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  color: rgba(255, 255, 255, 0.9);
 }
 
-/* 分页 */
+.document-table :deep(.el-table__row:hover > td) {
+  background: rgba(102, 126, 234, 0.1) !important;
+}
+
+/* 表格内 Tag 玻璃态样式 */
+.document-table :deep(.el-tag) {
+  background: rgba(102, 126, 234, 0.15) !important;
+  border: 1px solid rgba(102, 126, 234, 0.3) !important;
+  color: #a5b4fc !important;
+}
+
+.document-table :deep(.el-tag--primary) {
+  background: rgba(102, 126, 234, 0.2) !important;
+  border-color: rgba(102, 126, 234, 0.4) !important;
+  color: #a5b4fc !important;
+}
+
+.document-table :deep(.el-tag--success) {
+  background: rgba(52, 199, 89, 0.2) !important;
+  border-color: rgba(52, 199, 89, 0.4) !important;
+  color: #6ee7b7 !important;
+}
+
+.document-table :deep(.el-tag--warning) {
+  background: rgba(251, 191, 36, 0.2) !important;
+  border-color: rgba(251, 191, 36, 0.4) !important;
+  color: #fbbf24 !important;
+}
+
+.document-table :deep(.el-tag--danger) {
+  background: rgba(239, 68, 68, 0.2) !important;
+  border-color: rgba(239, 68, 68, 0.4) !important;
+  color: #f87171 !important;
+}
+
+.document-table :deep(.el-tag--info) {
+  background: rgba(156, 163, 175, 0.2) !important;
+  border-color: rgba(156, 163, 175, 0.4) !important;
+  color: #d1d5db !important;
+}
+
+/* 空值占位符样式 */
+.empty-text {
+  color: rgba(255, 255, 255, 0.3);
+  font-style: italic;
+}
+
+/* 分页 - 玻璃态 */
 .pagination-container {
   display: flex;
   justify-content: center;
   padding: 16px 0;
+}
+
+:deep(.el-pagination) {
+  --el-pagination-bg-color: transparent;
+  --el-pagination-text-color: rgba(255, 255, 255, 0.7);
+  --el-pagination-hover-color: #667eea;
+}
+
+:deep(.el-pagination .el-pager li) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  margin: 0 4px;
+  border-radius: 8px;
+}
+
+:deep(.el-pagination .el-pager li:hover) {
+  color: #FFFFFF !important;
+  border-color: rgba(102, 126, 234, 0.5);
+  background: rgba(102, 126, 234, 0.2) !important;
+}
+
+:deep(.el-pagination .el-pager li.is-active) {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  color: #FFFFFF !important;
+  font-weight: 600;
+  border-color: transparent;
+}
+
+:deep(.el-pagination .btn-prev),
+:deep(.el-pagination .btn-next) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+}
+
+:deep(.el-pagination .el-input__wrapper) {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: none !important;
+}
+
+:deep(.el-pagination .el-input__inner) {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.el-pagination .el-select__wrapper) {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: none !important;
+}
+
+:deep(.el-pagination .el-select__placeholder),
+:deep(.el-pagination .el-select__selected-item) {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+:deep(.el-pagination .el-pagination__total),
+:deep(.el-pagination .el-pagination__goto),
+:deep(.el-pagination .el-pagination__classifier) {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* 加载遮罩 - 透明背景 */
+.results-list :deep(.el-loading-mask) {
+  background: rgba(20, 20, 40, 0.8) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+}
+
+.results-list :deep(.el-loading-spinner .circular) {
+  stroke: #667eea !important;
+}
+
+.results-list :deep(.el-loading-spinner .el-loading-text) {
+  color: rgba(255, 255, 255, 0.8) !important;
 }
 
 /* 详情弹窗 - 高度限制，内容滚动 */
@@ -651,24 +827,24 @@ const formatAmount = (amount) => {
 }
 
 .dialog-scroll-content::-webkit-scrollbar-thumb {
-  background: #D2D2D7;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 3px;
 }
 
 .dialog-scroll-content::-webkit-scrollbar-thumb:hover {
-  background: #007AFF;
+  background: rgba(102, 126, 234, 0.5);
 }
 
 .detail-header {
   margin-bottom: 24px;
   padding-bottom: 20px;
-  border-bottom: 1px solid #F2F2F5;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .detail-title {
   font-size: 20px;
   font-weight: 600;
-  color: #1D1D1F;
+  color: #FFFFFF;
   margin-bottom: 12px;
   line-height: 1.4;
 }
@@ -682,13 +858,13 @@ const formatAmount = (amount) => {
 
 .meta-item {
   font-size: 13px;
-  color: #86868B;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .meta-item::before {
   content: '•';
   margin-right: 12px;
-  color: #D2D2D7;
+  color: rgba(255, 255, 255, 0.3);
 }
 
 .info-grid {
@@ -706,18 +882,18 @@ const formatAmount = (amount) => {
 
 .info-label {
   font-size: 12px;
-  color: #86868B;
+  color: rgba(255, 255, 255, 0.5);
   font-weight: 500;
 }
 
 .info-value {
   font-size: 15px;
-  color: #1D1D1F;
+  color: #FFFFFF;
   font-weight: 500;
 }
 
 .info-value.highlight {
-  color: #007AFF;
+  color: #a5b4fc;
 }
 
 .content-section {
@@ -727,7 +903,7 @@ const formatAmount = (amount) => {
 .section-title {
   font-size: 16px;
   font-weight: 600;
-  color: #1D1D1F;
+  color: #FFFFFF;
   margin-bottom: 12px;
   display: flex;
   align-items: center;
@@ -738,24 +914,25 @@ const formatAmount = (amount) => {
   content: '';
   width: 4px;
   height: 16px;
-  background: #007AFF;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   border-radius: 2px;
 }
 
 .section-content {
   font-size: 14px;
-  color: #1D1D1F;
+  color: rgba(255, 255, 255, 0.9);
   line-height: 1.8;
-  background: #F8F8FA;
+  background: rgba(255, 255, 255, 0.05);
   padding: 16px;
   border-radius: 12px;
   white-space: pre-wrap;
+  border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .section-content.laws {
   font-family: 'SF Mono', monospace;
   font-size: 13px;
-  color: #007AFF;
+  color: #a5b4fc;
 }
 
 /* 弹窗层级修复 */

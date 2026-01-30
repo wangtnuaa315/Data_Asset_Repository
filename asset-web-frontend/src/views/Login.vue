@@ -1,10 +1,20 @@
 <template>
   <div class="login-container">
-    <div class="login-card">
+    <!-- 动态光效背景 -->
+    <div class="background-effects">
+      <div class="gradient-orb orb-1"></div>
+      <div class="gradient-orb orb-2"></div>
+      <div class="gradient-orb orb-3"></div>
+    </div>
+
+    <!-- 玻璃态登录卡片 -->
+    <div class="login-card glass-card">
       <div class="login-header">
-        <el-icon :size="48" class="logo-icon"><DataAnalysis /></el-icon>
+        <div class="logo-container">
+          <el-icon :size="32" class="logo-icon"><DataAnalysis /></el-icon>
+        </div>
         <h1>数据资产检索系统</h1>
-        <p>请登录以继续</p>
+        <p>欢迎回来，请登录继续</p>
       </div>
 
       <el-form
@@ -15,45 +25,59 @@
         @submit.prevent="handleLogin"
       >
         <el-form-item prop="username">
-          <el-input
-            v-model="form.username"
-            placeholder="用户名"
-            :prefix-icon="User"
-            size="large"
-          />
+          <div class="input-wrapper">
+            <el-icon class="input-icon"><User /></el-icon>
+            <el-input
+              v-model="form.username"
+              placeholder="请输入用户名"
+              size="large"
+              class="glass-input"
+            />
+          </div>
         </el-form-item>
 
         <el-form-item prop="password">
-          <el-input
-            v-model="form.password"
-            type="password"
-            placeholder="密码"
-            :prefix-icon="Lock"
-            size="large"
-            show-password
-            @keyup.enter="handleLogin"
-          />
+          <div class="input-wrapper">
+            <el-icon class="input-icon"><Lock /></el-icon>
+            <el-input
+              v-model="form.password"
+              type="password"
+              placeholder="请输入密码"
+              size="large"
+              show-password
+              class="glass-input"
+              @keyup.enter="handleLogin"
+            />
+          </div>
         </el-form-item>
 
         <el-form-item>
-          <el-button
-            type="primary"
-            size="large"
-            class="login-btn"
-            :loading="loading"
-            @click="handleLogin"
-          >
-            登录
-          </el-button>
+          <div class="input-wrapper">
+            <el-button
+              type="primary"
+              size="large"
+              class="login-btn"
+              :loading="loading"
+              @click="handleLogin"
+            >
+              <span v-if="!loading">登  录</span>
+              <span v-else>登录中...</span>
+            </el-button>
+          </div>
         </el-form-item>
       </el-form>
 
       <div class="login-footer">
-        <p class="hint">
+        <div class="hint-box">
           <el-icon><InfoFilled /></el-icon>
-          普通用户：user / user123
-        </p>
+          <span>体验账号：user / user123</span>
+        </div>
       </div>
+    </div>
+
+    <!-- 底部版权 -->
+    <div class="copyright">
+      © 2026 数据资产检索系统 · 江苏怀业
     </div>
   </div>
 </template>
@@ -116,11 +140,10 @@ const handleLogin = async () => {
 
 <style scoped>
 /* =====================================================
-   Bento Grids / Apple Style + AI 科技背景
-   米白背景 + 圆角卡片 + 柔和阴影
+   Glassmorphism Login Page
+   紫蓝渐变背景 + 毛玻璃卡片
    ===================================================== */
 
-/* Google Fonts - Inter */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 .login-container {
@@ -128,199 +151,301 @@ const handleLogin = async () => {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Apple 风格米白背景 + 渐变光球 */
-  background: #F5F5F7;
-  background-image:
-    /* 左上角 - 蓝色光晕 */
-    radial-gradient(600px circle at 10% 20%,
-      rgba(0, 122, 255, 0.12) 0%,
-      transparent 50%),
-    /* 右下角 - 紫色光晕 */
-    radial-gradient(500px circle at 90% 80%,
-      rgba(88, 86, 214, 0.1) 0%,
-      transparent 50%),
-    /* 中间 - 淡粉色光晕 */
-    radial-gradient(400px circle at 50% 50%,
-      rgba(255, 45, 85, 0.05) 0%,
-      transparent 50%);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   position: relative;
   overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  
+  /* 主渐变背景 */
+  background: linear-gradient(135deg, 
+    #1a1a2e 0%, 
+    #16213e 25%, 
+    #0f3460 50%, 
+    #533483 75%, 
+    #e94560 100%
+  );
+  background-size: 400% 400%;
+  animation: gradientShift 15s ease infinite;
 }
 
-/* AI 科技背景图 */
-.login-container::before {
-  content: '';
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* 动态光效球 */
+.background-effects {
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url('/ai_bg.png');
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  overflow: hidden;
   pointer-events: none;
+}
+
+.gradient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
   opacity: 0.6;
 }
 
-/* 移除旧的伪元素 */
-.login-container::after {
-  display: none;
+.orb-1 {
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, #667eea 0%, transparent 70%);
+  top: -200px;
+  left: -100px;
+  animation: float 8s ease-in-out infinite;
 }
 
-/* Bento 风格登录卡片 */
-.login-card {
+.orb-2 {
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, #764ba2 0%, transparent 70%);
+  bottom: -150px;
+  right: -100px;
+  animation: float 10s ease-in-out infinite reverse;
+}
+
+.orb-3 {
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, #06b6d4 0%, transparent 70%);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulse 6s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-30px) rotate(5deg); }
+}
+
+@keyframes pulse {
+  0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.4; }
+  50% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.6; }
+}
+
+/* 玻璃态登录卡片 */
+.login-card.glass-card {
   width: 420px;
-  padding: 48px;
-  /* 完全不透明白色卡片 */
-  background: #FFFFFF;
-  /* 大圆角 - Apple 风格 */
-  border-radius: 24px;
-  /* 更强的阴影 - 从背景中凸显 */
-  box-shadow:
-    0 4px 6px rgba(0, 0, 0, 0.05),
-    0 10px 20px rgba(0, 0, 0, 0.08),
-    0 20px 40px rgba(0, 0, 0, 0.1);
-  /* 确保在背景之上 */
+  padding: 48px 40px;
   position: relative;
   z-index: 10;
+  
+  /* 玻璃态核心样式 */
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  
+  /* 边框和圆角 */
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  
+  /* 阴影和光效 */
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
 
+/* 头部 */
 .login-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 36px;
 }
 
-/* Logo - Apple 风格渐变 */
-.logo-icon {
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, #007AFF 0%, #5856D6 100%);
-  border-radius: 16px;
-  display: inline-flex;
+.logo-container {
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 20px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 24px;
-  box-shadow: 0 8px 24px rgba(0, 122, 255, 0.25);
+  box-shadow: 
+    0 8px 24px rgba(102, 126, 234, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.logo-icon {
   color: white;
-  padding: 0;
-  border: none;
+  font-size: 32px;
 }
 
 .login-header h1 {
-  color: #1D1D1F;
-  font-size: 24px;
-  font-weight: 600;
+  color: #FFFFFF;
+  font-size: 26px;
+  font-weight: 700;
   margin-bottom: 8px;
   letter-spacing: -0.5px;
-  font-family: 'Inter', -apple-system, sans-serif;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
 }
 
 .login-header p {
-  color: #86868B;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 15px;
   font-weight: 400;
 }
 
+/* 表单 */
 .login-form {
-  margin-bottom: 32px;
+  margin-bottom: 24px;
 }
 
-/* Element Plus 输入框样式覆盖 */
 .login-form :deep(.el-form-item) {
   margin-bottom: 20px;
 }
 
-.login-form :deep(.el-form-item__label) {
-  color: #1D1D1F;
-  font-size: 14px;
-  font-weight: 500;
-  font-family: 'Inter', -apple-system, sans-serif;
+.login-form :deep(.el-form-item__error) {
+  color: #ff6b6b;
+  padding-left: 44px;
 }
 
-.login-form :deep(.el-input__wrapper) {
+/* 输入框包装 */
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 18px;
+  z-index: 2;
+}
+
+.glass-input {
+  width: 100%;
+}
+
+.glass-input :deep(.el-input__wrapper) {
+  width: 100%;
   height: 52px !important;
-  border-radius: 12px !important;
-  border: 1px solid #D2D2D7 !important;
-  box-shadow: none !important;
-  padding: 0 16px !important;
-  background: #FFFFFF !important;
-  transition: all 0.2s ease !important;
+  padding: 0 16px 0 44px !important;
+  border-radius: 14px !important;
+  
+  /* 玻璃态输入框 */
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    0 2px 8px rgba(0, 0, 0, 0.1) !important;
+  
+  transition: all 0.3s ease !important;
 }
 
-.login-form :deep(.el-input__wrapper:hover) {
-  border-color: #86868B !important;
+.glass-input :deep(.el-input__wrapper:hover) {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
 }
 
-.login-form :deep(.el-input__wrapper.is-focus) {
-  border-color: #007AFF !important;
-  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1) !important;
+.glass-input :deep(.el-input__wrapper.is-focus) {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(102, 126, 234, 0.6) !important;
+  box-shadow: 
+    0 0 0 3px rgba(102, 126, 234, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
 }
 
-.login-form :deep(.el-input__inner) {
+.glass-input :deep(.el-input__inner) {
   height: 50px !important;
   line-height: 50px !important;
+  font-size: 15px !important;
+  color: #FFFFFF !important;
   font-family: 'Inter', -apple-system, sans-serif !important;
-  font-size: 16px !important;
-  color: #1D1D1F !important;
 }
 
-.login-form :deep(.el-input__inner::placeholder) {
-  color: #86868B !important;
+.glass-input :deep(.el-input__inner::placeholder) {
+  color: rgba(255, 255, 255, 0.5) !important;
 }
 
-.login-form :deep(.el-input__prefix) {
-  color: #86868B;
+.glass-input :deep(.el-input__suffix) {
+  color: rgba(255, 255, 255, 0.6);
 }
 
-/* Apple 蓝色登录按钮 */
+/* 登录按钮 */
 .login-btn {
   width: 100%;
   height: 52px !important;
   border: none !important;
-  border-radius: 12px !important;
+  border-radius: 14px !important;
   font-size: 16px !important;
   font-weight: 600 !important;
+  letter-spacing: 4px;
   font-family: 'Inter', -apple-system, sans-serif !important;
-  background: #007AFF !important;
+  
+  /* 渐变按钮 */
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
   color: white !important;
-  transition: all 0.2s ease !important;
+  
+  box-shadow: 
+    0 4px 16px rgba(102, 126, 234, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+  
+  transition: all 0.3s ease !important;
 }
 
 .login-btn:hover {
-  background: #0066CC !important;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(0, 122, 255, 0.3);
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 24px rgba(102, 126, 234, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3) !important;
 }
 
+.login-btn:active {
+  transform: translateY(0);
+}
+
+/* 底部提示 */
 .login-footer {
   text-align: center;
-  padding-top: 24px;
-  border-top: 1px solid #E8E8ED;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.hint {
-  color: #86868B;
-  font-size: 13px;
-  font-family: 'Inter', -apple-system, sans-serif;
-  display: flex;
+.hint-box {
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
   gap: 8px;
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
 }
 
-.hint strong {
-  color: #1D1D1F;
-  font-weight: 500;
+.hint-box .el-icon {
+  color: rgba(102, 126, 234, 0.8);
+}
+
+/* 版权信息 */
+.copyright {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 12px;
+  z-index: 10;
 }
 
 /* 响应式 */
 @media (max-width: 480px) {
-  .login-card {
+  .login-card.glass-card {
     width: calc(100% - 32px);
-    padding: 32px 24px;
+    padding: 36px 24px;
     margin: 16px;
+  }
+  
+  .gradient-orb {
+    display: none;
   }
 }
 </style>

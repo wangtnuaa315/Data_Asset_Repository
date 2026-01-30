@@ -1,352 +1,263 @@
 <template>
   <div class="court-page">
-    <!-- 搜索区域 -->
-    <div class="search-section">
-      <div class="search-compact-wrapper">
-        <el-form :model="searchForm" class="search-form-flex" :inline="true">
-          <!-- 案号 -->
-          <el-form-item label="案号" class="compact-item">
-            <el-input 
-              v-model="searchForm.ah" 
-              placeholder="输入案号" 
-              clearable
-              class="compact-input"
-              @keyup.enter="handleSearchClick"
+    <!-- 左右分栏主体 -->
+    <div class="court-main-layout">
+      
+      <!-- 左侧：案件列表区域 -->
+      <div class="left-panel">
+        <!-- 搜索栏 -->
+        <div class="search-bar">
+          <el-select
+            v-model="searchForm.region"
+            placeholder="全部区域"
+            clearable
+            class="region-select"
+            @change="handleSearchClick"
+          >
+            <el-option 
+              v-for="region in regionList" 
+              :key="region" 
+              :label="region" 
+              :value="region" 
             />
-          </el-form-item>
+          </el-select>
+          <el-input 
+            v-model="searchForm.ah" 
+            placeholder="搜索案号..." 
+            clearable
+            class="search-input"
+            @keyup.enter="handleSearchClick"
+          >
+            <template #prefix>
+              <el-icon><Search /></el-icon>
+            </template>
+          </el-input>
+          <el-button type="primary" :icon="Search" @click="handleSearchClick" :loading="loading" class="search-btn">
+            搜索
+          </el-button>
+        </div>
 
-          <!-- 案由 -->
-          <el-form-item label="案由" class="compact-item">
+        <!-- 案件列表 -->
+        <div class="case-list" v-loading="loading">
+          <div v-if="caseList.length === 0 && !loading" class="empty-state">
+            <el-empty description="点击搜索查看案件" :image-size="80" />
+          </div>
+          
+          <div v-for="caseItem in caseList" :key="caseItem.case_code" 
+               class="case-card"
+               :class="{ active: currentCase?.case_code === caseItem.case_code }"
+               @click="selectCase(caseItem)">
+            <div class="case-card-header">
+              <span class="case-number">{{ caseItem.ah || caseItem.case_code }}</span>
+              <span class="dossier-count">卷宗数: {{ caseItem.dossier_count || 0 }}</span>
+            </div>
+            <div class="case-card-tags">
+              <span v-if="caseItem.fymc" class="case-tag region">{{ caseItem.fymc }}</span>
+              <span v-if="caseItem.has_indictment" class="case-tag indictment">起诉状</span>
+              <span v-if="caseItem.has_defense" class="case-tag defense">答辩状</span>
+              <span v-if="caseItem.has_court_record" class="case-tag record">庭审笔录</span>
+              <span v-if="caseItem.has_judgement" class="case-tag judgement">判决书</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 分页 -->
+        <div class="pagination-box" v-if="total > 0">
+          <el-pagination
+            v-model:current-page="currentPage"
+            :page-size="pageSize"
+            :total="total"
+            layout="prev, pager, next"
+            small
+            @current-change="handleSearch"
+          />
+        </div>
+      </div>
+
+      <!-- 右侧：卷宗详情区域 -->
+      <div class="right-panel">
+        <template v-if="currentCase">
+          <!-- 案件头部 -->
+          <div class="detail-header">
+            <div class="detail-title">
+              <span class="case-ah">案号：{{ currentCase.ah || currentCase.case_code }}</span>
+              <el-button 
+                type="primary" 
+                size="small" 
+                @click="downloadCaseDossiers(currentCase)"
+                class="download-all-btn"
+              >
+                <el-icon><Download /></el-icon> 下载全部
+              </el-button>
+            </div>
+          </div>
+
+          <!-- 卷宗分类筛选 -->
+          <div class="dossier-filter">
             <el-select
-              v-model="searchForm.ay_ms"
-              placeholder="选择案由"
+              v-model="selectedCategory"
+              placeholder="筛选卷宗分类"
               clearable
-              filterable
-              class="compact-input"
+              class="category-filter-select"
             >
               <el-option
-                v-for="item in caseReasons"
-                :key="item"
-                :label="item"
-                :value="item"
+                v-for="cat in dossierCategories"
+                :key="cat.id"
+                :label="cat.name"
+                :value="cat.id"
               />
             </el-select>
-          </el-form-item>
-
-          <!-- 案件类型 -->
-          <el-form-item label="类型" class="compact-item small-item">
-            <el-select
-              v-model="searchForm.ajlx_mc"
-              placeholder="全部"
-              clearable
-              class="compact-input"
-            >
-              <el-option label="民事" value="民事" />
-              <el-option label="刑事" value="刑事" />
-              <el-option label="行政" value="行政" />
-            </el-select>
-          </el-form-item>
-
-          <!-- 审判阶段 -->
-          <el-form-item label="阶段" class="compact-item small-item">
-            <el-select
-              v-model="searchForm.trial_stage"
-              placeholder="全部"
-              clearable
-              class="compact-input"
-            >
-              <el-option label="一审" :value="1" />
-              <el-option label="二审" :value="2" />
-            </el-select>
-          </el-form-item>
-
-          <!-- 承办人 -->
-          <el-form-item label="承办人" class="compact-item small-item">
-            <el-input 
-              v-model="searchForm.cbr_mc" 
-              placeholder="法官" 
-              clearable
-              class="compact-input"
-            />
-          </el-form-item>
-
-          <!-- 按钮组 -->
-          <div class="search-actions-inline">
-            <el-button type="primary" :icon="Search" @click="handleSearchClick" :loading="loading">
-              检索
-            </el-button>
-            <el-button :icon="Refresh" @click="handleReset" class="reset-btn">
-              重置
-            </el-button>
           </div>
-        </el-form>
-      </div>
-    </div>
 
-    <!-- 结果统计 -->
-    <div v-if="caseList.length > 0" class="results-header">
-      <div class="stats">
-        <el-icon><Folder /></el-icon>
-        <span>找到 <strong>{{ total }}</strong> 个案件</span>
-      </div>
-      <div class="header-actions">
-        <div class="selected-info" v-if="selectedCases.length > 0">
-          <span>已选择 <strong>{{ selectedCases.length }}</strong> 个</span>
-        </div>
-        <el-button-group class="view-toggle">
-          <el-button 
-            :type="viewMode === 'list' ? 'primary' : 'default'" 
-            :icon="List" 
-            @click="viewMode = 'list'"
-            title="列表视图"
-          />
-        </el-button-group>
-      </div>
-    </div>
-
-    <!-- 案件列表表格 -->
-    <div v-if="caseList.length > 0" class="results-container">
-      <el-table
-        :data="caseList"
-        v-loading="loading"
-        @selection-change="handleSelectionChange"
-        row-key="case_code"
-        class="case-table"
-      >
-        <el-table-column type="selection" width="45" />
-        
-        <el-table-column label="案号" min-width="200">
-          <template #default="{ row }">
-            <span class="case-number">{{ row.ah }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="案件名称" min-width="200" show-overflow-tooltip>
-          <template #default="{ row }">
-            {{ row.aj_mc }}
-          </template>
-        </el-table-column>
-
-        <el-table-column label="案由" width="140">
-          <template #default="{ row }">
-            <el-tag :type="row.ajlx_mc === '刑事' ? 'danger' : 'warning'" effect="plain" size="small">
-              {{ row.ay_ms }}
-            </el-tag>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="阶段" width="80">
-          <template #default="{ row }">
-            <span :class="['trial-stage', row.trial_stage === 1 ? 'first' : 'second']">
-              {{ row.trial_stage === 1 ? '一审' : '二审' }}
-            </span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="卷宗统计" width="180">
-          <template #default="{ row }">
-            <div class="dossier-tags">
-              <span :class="['dossier-tag', row.has_indictment ? '' : 'missing']">起诉状</span>
-              <span :class="['dossier-tag', row.has_defense ? '' : 'missing']">答辩状</span>
-              <span :class="['dossier-tag', row.has_judgement ? '' : 'missing']">判决书</span>
-            </div>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="承办人" width="90">
-          <template #default="{ row }">
-            {{ row.cbr_mc }}
-          </template>
-        </el-table-column>
-        
-        <el-table-column label="立案日期" width="110">
-          <template #default="{ row }">
-            <span class="time-text">{{ row.larq }}</span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="操作" width="100" fixed="right">
-          <template #default="{ row }">
-            <div class="action-btns">
-              <el-tooltip content="查看详情" placement="top">
-                <div class="action-icon" @click="showCaseDetail(row)">
-                  <el-icon><View /></el-icon>
+          <!-- 卷宗树形列表 -->
+          <div class="dossier-tree" v-loading="loadingDossiers">
+            <template v-if="filteredDossierTree.length > 0">
+              <div v-for="node in filteredDossierTree" :key="node.dossier_code" class="tree-node">
+                <!-- 文件夹节点 -->
+                <div v-if="node.is_folder" class="tree-folder">
+                  <div class="tree-folder-header">
+                    <span class="tree-icon folder">📁</span>
+                    <span class="tree-folder-name">{{ node.name }}</span>
+                    <span class="tree-folder-count">{{ getFilteredChildren(node).length }} 个文件</span>
+                  </div>
+                  <div class="tree-folder-children">
+                    <div 
+                      v-for="child in getFilteredChildren(node)" 
+                      :key="child.dossier_code"
+                      class="tree-file-item"
+                    >
+                      <span class="tree-icon file">📄</span>
+                      <el-tooltip :content="child.name" placement="top" :show-after="500">
+                        <span class="tree-file-name">{{ child.name }}</span>
+                      </el-tooltip>
+                      <span v-if="child.category_name" :class="['tree-category', getCategoryClass(child.category_name)]">
+                        {{ child.category_name }}
+                      </span>
+                      <div class="tree-file-actions">
+                        <el-button type="primary" link size="small" @click="previewDossier(child)">
+                          <el-icon><View /></el-icon>
+                        </el-button>
+                        <el-button type="success" link size="small" @click="downloadDossier(child)">
+                          <el-icon><Download /></el-icon>
+                        </el-button>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-              </el-tooltip>
-              <el-tooltip content="下载卷宗" placement="top">
-                <div class="action-icon download">
-                  <el-icon><Download /></el-icon>
-                </div>
-              </el-tooltip>
-            </div>
-          </template>
-        </el-table-column>
-      </el-table>
-    </div>
-
-    <!-- 空状态 -->
-    <el-empty
-      v-if="hasSearched && !loading && caseList.length === 0"
-      description="未找到匹配的案件"
-      :image-size="200"
-    />
-
-    <!-- 分页 -->
-    <div v-if="total > 0" class="pagination-container">
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :page-sizes="[20, 50, 100]"
-        :total="total"
-        layout="total, sizes, prev, pager, next, jumper"
-        @current-change="handleSearch"
-        @size-change="handleSearch"
-      />
-    </div>
-
-    <!-- 案件详情弹窗 -->
-    <el-dialog
-      v-model="detailVisible"
-      title=""
-      width="780px"
-      :close-on-click-modal="false"
-    >
-      <div v-if="currentCase" class="case-detail">
-        <div class="case-detail-header">
-          <div>
-            <div class="case-detail-title">{{ currentCase.aj_mc }}</div>
-            <div class="case-detail-ah">{{ currentCase.ah }}</div>
-          </div>
-          <el-tag :type="currentCase.ajlx_mc === '民事' ? 'warning' : 'danger'" size="large" effect="plain">
-            {{ currentCase.ajlx_mc }}
-          </el-tag>
-        </div>
-
-        <div class="info-grid">
-          <div class="info-item">
-            <span class="info-label">法院</span>
-            <span class="info-value">{{ currentCase.fymc }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">案由</span>
-            <span class="info-value">{{ currentCase.ay_ms }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">承办人</span>
-            <span class="info-value">{{ currentCase.cbr_mc }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">立案日期</span>
-            <span class="info-value">{{ currentCase.larq }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">审判阶段</span>
-            <span class="info-value">{{ currentCase.trial_stage === 1 ? '一审' : '二审' }}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">标的金额</span>
-            <span class="info-value">{{ currentCase.bdje ? `¥ ${currentCase.bdje.toLocaleString()}` : '-' }}</span>
-          </div>
-        </div>
-
-        <!-- 关联案件 -->
-        <div v-if="currentCase.first_instance_ah" class="related-section">
-          <div class="section-title">关联案件</div>
-          <div class="related-case" @click="jumpToRelatedCase(currentCase.first_instance_ah)">
-            <span class="related-case-icon">🔗</span>
-            <div class="related-case-info">
-              <div class="related-case-label">一审案件</div>
-              <div class="related-case-ah">{{ currentCase.first_instance_ah }}</div>
-            </div>
-            <el-button type="primary" link>跳转查看 →</el-button>
-          </div>
-        </div>
-
-        <!-- 卷宗目录 -->
-        <div class="section-title">卷宗目录</div>
-        <div class="dossier-tree" v-loading="loadingDossiers">
-          <template v-if="dossierTree.length > 0">
-            <div v-for="node in dossierTree" :key="node.dossier_code">
-              <div class="tree-item" :class="{ folder: node.is_folder }">
-                <span class="tree-icon" :class="node.is_folder ? 'folder' : 'file'">
-                  {{ node.is_folder ? '📁' : '📄' }}
-                </span>
-                <span class="tree-name">{{ node.name }}</span>
-                <span v-if="node.category_name" class="tree-category">{{ node.category_name }}</span>
-              </div>
-              <div v-if="node.children && node.children.length > 0" class="tree-children">
-                <div 
-                  v-for="child in node.children" 
-                  :key="child.dossier_code"
-                  class="tree-item"
-                  @click="previewDossier(child)"
-                >
+                <!-- 文件节点 -->
+                <div v-else class="tree-file-item">
                   <span class="tree-icon file">📄</span>
-                  <span class="tree-name">{{ child.name }}</span>
-                  <span v-if="child.category_name" class="tree-category">{{ child.category_name }}</span>
+                  <el-tooltip :content="node.name" placement="top" :show-after="500">
+                    <span class="tree-file-name">{{ node.name }}</span>
+                  </el-tooltip>
+                  <span v-if="node.category_name" :class="['tree-category', getCategoryClass(node.category_name)]">
+                    {{ node.category_name }}
+                  </span>
+                  <div class="tree-file-actions">
+                    <el-button type="primary" link size="small" @click="previewDossier(node)">
+                      <el-icon><View /></el-icon>
+                    </el-button>
+                    <el-button type="success" link size="small" @click="downloadDossier(node)">
+                      <el-icon><Download /></el-icon>
+                    </el-button>
+                  </div>
                 </div>
               </div>
-            </div>
-          </template>
-          <el-empty v-else description="暂无卷宗" :image-size="80" />
-        </div>
+            </template>
+            <el-empty v-else description="暂无卷宗" :image-size="80" />
+          </div>
+        </template>
+        
+        <template v-else>
+          <div class="no-selection">
+            <el-empty description="请从左侧选择案件查看卷宗" :image-size="120" />
+          </div>
+        </template>
       </div>
-
-      <template #footer>
-        <el-button @click="detailVisible = false" class="reset-btn">关闭</el-button>
-        <el-button type="primary">
-          <el-icon style="margin-right: 6px;"><Download /></el-icon>
-          下载全部卷宗
-        </el-button>
-      </template>
-    </el-dialog>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Search, Refresh, Download, List, View, Folder } from '@element-plus/icons-vue'
-import { searchCases, getCaseDossiers, getCaseReasons, getDossierPreviewUrl } from '../api/court'
+import { Search, Download, View } from '@element-plus/icons-vue'
+import { searchCases, getCaseDossiers, getDossierPreviewUrl, getDossierDownloadUrl, getCaseZipDownloadUrl, getDossierCategories, getRegions } from '../api/court'
 
 // 搜索表单
 const searchForm = reactive({
   ah: '',
-  ay_ms: '',
-  ajlx_mc: '',
-  trial_stage: null,
-  cbr_mc: ''
+  region: ''
 })
 
-// 案由列表
-const caseReasons = ref([])
+// 卷宗分类列表
+const dossierCategories = ref([])
+
+// 区域列表（动态加载）
+const regionList = ref([])
 
 // 状态
 const loading = ref(false)
-const hasSearched = ref(false)
-const viewMode = ref('list')
+const loadingDossiers = ref(false)
 
 // 数据
 const caseList = ref([])
 const total = ref(0)
 const currentPage = ref(1)
 const pageSize = ref(20)
-const selectedCases = ref([])
 
-// 详情弹窗
-const detailVisible = ref(false)
+// 选中的案件
 const currentCase = ref(null)
 const dossierTree = ref([])
-const loadingDossiers = ref(false)
+const selectedCategory = ref(null)
+
+// 分类名称映射到ID
+const categoryNameToId = {
+  '起诉状': 1, '答辩状': 2, '证据': 3, '其他文件': 4,
+  '原审判决书': 5, '庭审笔录': 6, '诉讼请求变更申请': 7,
+  '反诉状': 8, '量刑建议书': 9, '行政复议决定书': 10,
+  '立案审批表': 11, '调解笔录': 12, '调解协议': 13,
+  '送达回证': 14, '上诉状': 15, '听证笔录': 16, '谈话笔录': 17
+}
 
 // 初始化
 onMounted(async () => {
   try {
-    caseReasons.value = await getCaseReasons()
+    // 并行加载分类和区域列表
+    const [categories, regions] = await Promise.all([
+      getDossierCategories(),
+      getRegions()
+    ])
+    dossierCategories.value = categories
+    regionList.value = regions
   } catch (e) {
-    console.error('获取案由列表失败:', e)
+    console.error('加载初始化数据失败:', e)
   }
 })
+
+// 过滤后的卷宗树
+const filteredDossierTree = computed(() => {
+  if (!selectedCategory.value) return dossierTree.value
+  
+  return dossierTree.value.filter(node => {
+    if (node.is_folder) {
+      const hasMatch = node.children?.some(child => 
+        categoryNameToId[child.category_name] === selectedCategory.value
+      )
+      return hasMatch
+    } else {
+      return categoryNameToId[node.category_name] === selectedCategory.value
+    }
+  })
+})
+
+// 获取过滤后的子节点
+const getFilteredChildren = (node) => {
+  if (!selectedCategory.value) return node.children || []
+  return (node.children || []).filter(child => 
+    categoryNameToId[child.category_name] === selectedCategory.value
+  )
+}
 
 // 搜索（重置页码）
 const handleSearchClick = () => {
@@ -357,17 +268,22 @@ const handleSearchClick = () => {
 // 搜索
 const handleSearch = async () => {
   loading.value = true
-  hasSearched.value = true
   
   try {
     const result = await searchCases({
-      ...searchForm,
+      ah: searchForm.ah,
+      region: searchForm.region,
       page: currentPage.value,
       page_size: pageSize.value
     })
     
     caseList.value = result.items
     total.value = result.total
+    
+    // 如果有结果，自动选中第一个
+    if (result.items.length > 0 && !currentCase.value) {
+      selectCase(result.items[0])
+    }
   } catch (error) {
     ElMessage.error('检索失败：' + (error.response?.data?.detail || error.message))
   } finally {
@@ -375,32 +291,14 @@ const handleSearch = async () => {
   }
 }
 
-// 重置
-const handleReset = () => {
-  searchForm.ah = ''
-  searchForm.ay_ms = ''
-  searchForm.ajlx_mc = ''
-  searchForm.trial_stage = null
-  searchForm.cbr_mc = ''
-  currentPage.value = 1
-  caseList.value = []
-  total.value = 0
-  hasSearched.value = false
-}
-
-// 选择变化
-const handleSelectionChange = (selection) => {
-  selectedCases.value = selection
-}
-
-// 显示案件详情
-const showCaseDetail = async (row) => {
-  currentCase.value = row
-  detailVisible.value = true
+// 选择案件
+const selectCase = async (caseItem) => {
+  currentCase.value = caseItem
   loadingDossiers.value = true
+  selectedCategory.value = null
   
   try {
-    const result = await getCaseDossiers(row.case_code)
+    const result = await getCaseDossiers(caseItem.case_code)
     dossierTree.value = result.tree || []
   } catch (error) {
     ElMessage.error('获取卷宗列表失败')
@@ -410,479 +308,438 @@ const showCaseDetail = async (row) => {
   }
 }
 
-// 跳转关联案件
-const jumpToRelatedCase = (ah) => {
-  searchForm.ah = ah
-  detailVisible.value = false
-  handleSearchClick()
-}
-
 // 预览卷宗
 const previewDossier = (node) => {
-  if (node.download_url) {
+  if (node.dossier_code) {
     window.open(getDossierPreviewUrl(node.dossier_code), '_blank')
   }
+}
+
+// 下载卷宗
+const downloadDossier = (node) => {
+  if (node.dossier_code) {
+    window.open(getDossierDownloadUrl(node.dossier_code), '_blank')
+  }
+}
+
+// 下载案件全部卷宗
+const downloadCaseDossiers = (caseItem) => {
+  if (!caseItem.case_code) return
+  ElMessage.info('正在打包下载，请稍候...')
+  window.open(getCaseZipDownloadUrl(caseItem.case_code), '_blank')
+}
+
+// 分类样式映射
+const getCategoryClass = (categoryName) => {
+  const classMap = {
+    '起诉状': 'cat-indictment',
+    '答辩状': 'cat-defense',
+    '证据': 'cat-evidence',
+    '庭审笔录': 'cat-record',
+    '判决书': 'cat-judgement',
+    '反诉状': 'cat-counterclaim',
+    '立案审批表': 'cat-filing',
+    '送达回证': 'cat-delivery',
+    '上诉状': 'cat-appeal',
+  }
+  return classMap[categoryName] || 'cat-other'
 }
 </script>
 
 <style scoped>
 /* =====================================================
-   Bento Grids / Apple Style - Court Page
+   Glassmorphism - Court Page 左右分栏布局
    ===================================================== */
 
 .court-page {
   height: 100%;
   display: flex;
   flex-direction: column;
-  gap: 20px;
   overflow: hidden;
   position: relative;
   z-index: 1;
-  
-  /* 背景图 - 与应急模块一致 */
-  background: url('/ai_bg.png') no-repeat center center;
-  background-size: cover;
+}
+
+.court-main-layout {
+  display: flex;
+  gap: 20px;
+  height: 100%;
+  overflow: hidden;
 }
 
 /* =====================================================
-   搜索区域 - Bento 白色卡片
+   左侧面板 - 案件列表
    ===================================================== */
-.search-section {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 24px 32px;
-  width: 100%;
-  background: #FFFFFF;
-  border-radius: 24px;
-  box-shadow: 
-    0 4px 6px rgba(0, 0, 0, 0.05),
-    0 10px 20px rgba(0, 0, 0, 0.08);
-}
-
-.search-form-flex {
+.left-panel {
+  width: 420px;
+  flex-shrink: 0;
   display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 16px;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  overflow: hidden;
 }
 
-.search-form-flex .el-form-item {
-  margin-bottom: 0;
-  margin-right: 0;
-  display: flex;
-  align-items: center;
-}
-
-/* Apple 风格输入框 */
-.search-section :deep(.el-input__wrapper),
-.search-section :deep(.el-select__wrapper) {
-  height: 48px !important;
-  border-radius: 12px !important;
-  padding: 0 16px !important;
-  border: 1px solid #D2D2D7 !important;
-  box-shadow: none !important;
-  background: #FFFFFF !important;
-  transition: all 0.2s ease !important;
-}
-
-.search-section :deep(.el-input__wrapper:hover),
-.search-section :deep(.el-select__wrapper:hover) {
-  border-color: #86868B !important;
-}
-
-.search-section :deep(.el-input__wrapper.is-focus),
-.search-section :deep(.el-select__wrapper.is-focus) {
-  border-color: #007AFF !important;
-  box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1) !important;
-}
-
-.search-section :deep(.el-input__inner) {
-  height: 46px !important;
-  font-family: 'Inter', -apple-system, sans-serif !important;
-  font-size: 15px !important;
-  color: #1D1D1F !important;
-}
-
-.search-section :deep(.el-form-item__label) {
-  color: #1D1D1F;
-  font-weight: 500;
-  font-family: 'Inter', -apple-system, sans-serif;
-}
-
-.compact-input {
-  width: 160px !important;
-}
-
-.small-item .compact-input {
-  width: 100px !important;
-}
-
-.search-actions-inline {
+/* 搜索栏 */
+.search-bar {
   display: flex;
   gap: 10px;
-  margin-left: auto;
+  padding: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Apple 蓝色按钮 */
-.search-actions-inline :deep(.el-button--primary) {
-  background: #007AFF !important;
-  border-color: #007AFF !important;
-  border-radius: 12px !important;
-  height: 48px !important;
-  font-weight: 600 !important;
-  padding: 0 24px !important;
+.region-select {
+  width: 120px !important;
 }
 
-.search-actions-inline :deep(.el-button--primary:hover) {
-  background: #0066CC !important;
-  border-color: #0066CC !important;
-}
-
-.reset-btn {
-  background: #F5F5F7 !important;
-  border-color: #D2D2D7 !important;
-  border-radius: 12px !important;
-  height: 48px !important;
-  color: #1D1D1F !important;
-}
-
-.reset-btn:hover {
-  color: #007AFF !important;
-  border-color: #007AFF !important;
-  background: rgba(0, 122, 255, 0.08) !important;
-}
-
-/* =====================================================
-   结果区域
-   ===================================================== */
-.results-header {
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 8px;
-}
-
-.stats {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: #86868B;
-  font-size: 15px;
-}
-
-.stats strong {
-  color: #007AFF;
-  font-weight: 600;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.results-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-  background: #FFFFFF;
-  border-radius: 20px;
-  padding: 20px;
-  box-shadow: 
-    0 4px 6px rgba(0, 0, 0, 0.05),
-    0 10px 20px rgba(0, 0, 0, 0.08);
+.search-input {
   flex: 1;
-  overflow: auto;
 }
 
-/* 表格样式 */
-.case-table {
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid #F2F2F5;
+.search-btn {
+  height: 42px !important;
+  border-radius: 10px !important;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  padding: 0 16px !important;
 }
 
-.case-table :deep(th.el-table__cell) {
-  background: #F8F8FA !important;
-  color: #1D1D1F;
-  font-weight: 600;
-  border-bottom: 1px solid #E5E5E5;
-  height: 52px;
+.search-bar :deep(.el-input__wrapper),
+.search-bar :deep(.el-select__wrapper) {
+  height: 42px !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: none !important;
 }
 
-.case-table :deep(.el-table__row:hover > td) {
-  background: rgba(0, 122, 255, 0.04) !important;
+.search-bar :deep(.el-input__wrapper:hover),
+.search-bar :deep(.el-select__wrapper:hover) {
+  border-color: rgba(255, 255, 255, 0.25) !important;
 }
 
-/* 案号 */
-.case-number {
-  font-family: 'SF Mono', 'Consolas', monospace;
-  font-size: 13px;
-  color: #007AFF;
-  font-weight: 500;
+.search-bar :deep(.el-input__wrapper.is-focus),
+.search-bar :deep(.el-select__wrapper.is-focus) {
+  border-color: rgba(102, 126, 234, 0.5) !important;
 }
 
-/* 审判阶段 */
-.trial-stage {
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-weight: 500;
+.search-bar :deep(.el-input__inner) {
+  color: #fff !important;
 }
 
-.trial-stage.first {
-  background: rgba(0, 122, 255, 0.1);
-  color: #007AFF;
+.search-bar :deep(.el-input__inner::placeholder) {
+  color: rgba(255, 255, 255, 0.5) !important;
 }
 
-.trial-stage.second {
-  background: rgba(255, 149, 0, 0.1);
-  color: #FF9500;
+.search-bar :deep(.el-select__placeholder) {
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
-/* 卷宗统计标签 */
-.dossier-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
+/* 案件列表 */
+.case-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
 }
 
-.dossier-tag {
-  font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 6px;
-  background: rgba(52, 199, 89, 0.1);
-  color: #34C759;
-  font-weight: 500;
-}
-
-.dossier-tag.missing {
-  background: rgba(255, 59, 48, 0.1);
-  color: #FF3B30;
-  text-decoration: line-through;
-}
-
-/* 时间 */
-.time-text {
-  font-size: 13px;
-  color: #86868B;
-}
-
-/* 操作按钮 */
-.action-btns {
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 12px;
-}
-
-.action-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  color: #007AFF;
-  background: rgba(0, 122, 255, 0.08);
+.case-card {
+  padding: 14px 16px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.action-icon:hover {
-  background: rgba(0, 122, 255, 0.15);
-  transform: scale(1.05);
+.case-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
-.action-icon.download {
-  color: #34C759;
-  background: rgba(52, 199, 89, 0.08);
+.case-card.active {
+  background: rgba(102, 126, 234, 0.15);
+  border-color: rgba(102, 126, 234, 0.4);
 }
 
-.action-icon.download:hover {
-  background: rgba(52, 199, 89, 0.15);
-}
-
-/* 分页 */
-.pagination-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 16px 0;
-}
-
-/* =====================================================
-   案件详情弹窗
-   ===================================================== */
-.case-detail-header {
+.case-card-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 24px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #F2F2F5;
+  align-items: center;
+  margin-bottom: 10px;
 }
 
-.case-detail-title {
-  font-size: 20px;
+.case-number {
   font-weight: 600;
-  color: #1D1D1F;
-  margin-bottom: 8px;
-}
-
-.case-detail-ah {
-  font-family: 'SF Mono', monospace;
+  color: #fff;
   font-size: 14px;
-  color: #007AFF;
 }
 
-.info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-  margin-bottom: 28px;
+.dossier-count {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+  background: rgba(102, 126, 234, 0.2);
+  padding: 2px 8px;
+  border-radius: 6px;
 }
 
-.info-item {
+.case-card-tags {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
   gap: 6px;
 }
 
-.info-label {
-  font-size: 12px;
-  color: #86868B;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.info-value {
-  font-size: 15px;
-  color: #1D1D1F;
+.case-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 4px;
   font-weight: 500;
 }
 
-.section-title {
-  font-size: 17px;
-  font-weight: 600;
-  color: #1D1D1F;
-  margin-bottom: 16px;
+.case-tag.region {
+  background: rgba(59, 130, 246, 0.2);
+  color: #60a5fa;
+}
+
+.case-tag.indictment {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+}
+
+.case-tag.defense {
+  background: rgba(251, 191, 36, 0.2);
+  color: #fbbf24;
+}
+
+.case-tag.record {
+  background: rgba(102, 126, 234, 0.2);
+  color: #a5b4fc;
+}
+
+.case-tag.judgement {
+  background: rgba(52, 199, 89, 0.2);
+  color: #6ee7b7;
+}
+
+/* 分页 */
+.pagination-box {
+  padding: 12px 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
   display: flex;
-  align-items: center;
-  gap: 10px;
+  justify-content: center;
 }
 
-.section-title::before {
-  content: '';
-  width: 4px;
-  height: 18px;
-  background: #007AFF;
-  border-radius: 2px;
+.pagination-box :deep(.el-pagination) {
+  --el-pagination-bg-color: transparent;
+  --el-pagination-text-color: rgba(255, 255, 255, 0.7);
+  --el-pagination-button-disabled-color: rgba(255, 255, 255, 0.3);
 }
 
-.related-section {
-  margin-bottom: 28px;
+.pagination-box :deep(.el-pager li) {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.7) !important;
 }
 
-.related-case {
-  display: flex;
-  align-items: center;
-  padding: 14px 18px;
-  background: rgba(0, 122, 255, 0.05);
-  border: 1px solid rgba(0, 122, 255, 0.1);
-  border-radius: 12px;
-  cursor: pointer;
-  transition: all 0.2s;
+.pagination-box :deep(.el-pager li.is-active) {
+  background: rgba(102, 126, 234, 0.3) !important;
+  color: #fff !important;
 }
 
-.related-case:hover {
-  background: rgba(0, 122, 255, 0.1);
-}
-
-.related-case-icon {
-  margin-right: 14px;
-  font-size: 22px;
-}
-
-.related-case-info {
+/* =====================================================
+   右侧面板 - 卷宗详情
+   ===================================================== */
+.right-panel {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 20px;
+  overflow: hidden;
 }
 
-.related-case-label {
-  font-size: 12px;
-  color: #86868B;
+.no-selection {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.related-case-ah {
-  font-size: 14px;
-  color: #007AFF;
-  font-family: 'SF Mono', monospace;
+/* 详情头部 */
+.detail-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.detail-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.case-ah {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.download-all-btn {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+  border: none !important;
+  border-radius: 10px !important;
+}
+
+/* 分类筛选 */
+.dossier-filter {
+  padding: 16px 24px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.category-filter-select {
+  width: 200px !important;
+}
+
+.dossier-filter :deep(.el-select__wrapper) {
+  height: 38px !important;
+  border-radius: 10px !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: none !important;
+}
+
+.dossier-filter :deep(.el-select__placeholder) {
+  color: rgba(255, 255, 255, 0.6) !important;
 }
 
 /* 卷宗树 */
 .dossier-tree {
-  background: #F8F8FA;
-  border-radius: 16px;
-  padding: 16px;
-  max-height: 280px;
+  flex: 1;
   overflow-y: auto;
+  padding: 16px 24px;
 }
 
-.tree-item {
+.tree-folder {
+  margin-bottom: 16px;
+}
+
+.tree-folder-header {
   display: flex;
   align-items: center;
-  padding: 10px 14px;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
-  margin-bottom: 6px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.tree-item:hover {
-  background: rgba(0, 122, 255, 0.08);
-}
-
-.tree-item.folder {
-  font-weight: 500;
-}
-
-.tree-icon {
-  margin-right: 12px;
-  font-size: 20px;
+  margin-bottom: 8px;
 }
 
 .tree-icon.folder {
-  color: #FF9500;
+  font-size: 18px;
+}
+
+.tree-folder-name {
+  font-weight: 600;
+  color: #fff;
+  flex: 1;
+}
+
+.tree-folder-count {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.tree-folder-children {
+  padding-left: 24px;
+}
+
+.tree-file-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 10px;
+  transition: background 0.15s ease;
+}
+
+.tree-file-item:hover {
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .tree-icon.file {
-  color: #007AFF;
+  font-size: 16px;
 }
 
-.tree-name {
+.tree-file-name {
   flex: 1;
+  color: rgba(255, 255, 255, 0.9);
   font-size: 14px;
-  color: #1D1D1F;
-  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .tree-category {
   font-size: 11px;
-  padding: 3px 8px;
-  border-radius: 6px;
-  background: rgba(0, 122, 255, 0.1);
-  color: #007AFF;
+  padding: 2px 8px;
+  border-radius: 4px;
   font-weight: 500;
 }
 
-.tree-children {
-  margin-left: 32px;
+.tree-category.cat-indictment { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+.tree-category.cat-defense { background: rgba(251, 191, 36, 0.2); color: #fbbf24; }
+.tree-category.cat-evidence { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+.tree-category.cat-record { background: rgba(102, 126, 234, 0.2); color: #a5b4fc; }
+.tree-category.cat-judgement { background: rgba(52, 199, 89, 0.2); color: #6ee7b7; }
+.tree-category.cat-counterclaim { background: rgba(168, 85, 247, 0.2); color: #c4b5fd; }
+.tree-category.cat-filing { background: rgba(6, 182, 212, 0.2); color: #22d3ee; }
+.tree-category.cat-delivery { background: rgba(244, 114, 182, 0.2); color: #f472b6; }
+.tree-category.cat-appeal { background: rgba(249, 115, 22, 0.2); color: #fb923c; }
+.tree-category.cat-other { background: rgba(156, 163, 175, 0.2); color: #9ca3af; }
+
+.tree-file-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.tree-file-actions :deep(.el-button) {
+  padding: 4px 8px !important;
+}
+
+.empty-state {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+}
+
+/* =====================================================
+   滚动条样式
+   ===================================================== */
+.case-list::-webkit-scrollbar,
+.dossier-tree::-webkit-scrollbar {
+  width: 6px;
+}
+
+.case-list::-webkit-scrollbar-track,
+.dossier-tree::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.case-list::-webkit-scrollbar-thumb,
+.dossier-tree::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+}
+
+.case-list::-webkit-scrollbar-thumb:hover,
+.dossier-tree::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.25);
 }
 </style>
